@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { ZodError } from "zod";
+import { formatBdt } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { customDecantPrice } from "@/lib/pricing";
+import { variantLabel } from "@/lib/products";
 import { orderSchema } from "@/lib/validations";
 import { sendWhatsAppNotification } from "@/lib/whatsapp";
 
 function createOrderNumber() {
-  return `CN-${Date.now().toString().slice(-6)}-${Math.floor(Math.random() * 90 + 10)}`;
+  return `CN-${Date.now().toString().slice(-6)}`;
 }
 
 function buildOrderMessage(params: {
@@ -16,34 +18,27 @@ function buildOrderMessage(params: {
   phone: string;
   address: string;
   city: string;
+  productName: string;
   label: string;
   quantity: number;
   totalBdt: number;
   notes?: string | null;
 }) {
   return [
-    `New Order - ${params.orderNumber}`,
+    `🛎️ New Order — ${params.orderNumber}`,
     "",
-    `Name: ${params.customerName}`,
-    `Phone: ${params.phone}`,
-    `Address: ${params.address}, ${params.city}`,
+    `👤 ${params.customerName}`,
+    `📞 ${params.phone}`,
+    `📍 ${params.address}, ${params.city}`,
     "",
-    `Item: ${params.label} x ${params.quantity}`,
-    `Total: ৳${params.totalBdt.toLocaleString("en-BD")}`,
-    params.notes ? `Note: ${params.notes}` : undefined,
+    `🧴 ${params.label} — ${params.productName} × ${params.quantity}`,
+    `💰 Total: ${formatBdt(params.totalBdt)}`,
+    params.notes ? `📝 Note: ${params.notes}` : undefined,
     "",
-    "Confirm in Prisma Studio after contacting the customer.",
+    "Confirm via Prisma Studio once you've contacted the customer.",
   ]
     .filter(Boolean)
     .join("\n");
-}
-
-function labelForVariantSize(size: string) {
-  if (size === "FULL_BOTTLE") {
-    return "Full Bottle";
-  }
-
-  return `${size.replace("DECANT_", "").toLowerCase()} Decant`;
 }
 
 export async function POST(request: Request) {
@@ -53,7 +48,6 @@ export async function POST(request: Request) {
 
     const product = await prisma.product.findUnique({
       where: { id: body.productId },
-      include: { variants: true },
     });
 
     if (!product || !product.isActive) {
@@ -67,14 +61,9 @@ export async function POST(request: Request) {
     let customMl: number | null = null;
 
     if (body.productVariantId) {
-      const [, variantSize] = body.productVariantId.split(":");
-      const variants = product.variants as Array<{
-        id: string;
-        size: string;
-        priceBdt: number;
-        stockQty: number;
-      }>;
-      const variant = variants.find((item) => item.size === variantSize);
+      const variant = await prisma.productVariant.findFirst({
+        where: { id: body.productVariantId, productId: product.id },
+      });
 
       if (!variant) {
         return NextResponse.json({ success: false, message: "Variant not found." }, { status: 404 });
@@ -84,7 +73,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: false, message: "Variant is sold out." }, { status: 409 });
       }
 
-      label = labelForVariantSize(variant.size);
+      label = variantLabel(variant.size, product.actualBottleMl);
       unitPriceBdt = variant.priceBdt;
       productVariantId = variant.id;
     } else {
@@ -95,6 +84,7 @@ export async function POST(request: Request) {
     }
 
     const totalPriceBdtAtOrder = unitPriceBdt * body.quantity;
+    const productName = `${product.brand} ${product.name}`;
 
     const order = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const createdOrder = await tx.order.create({
@@ -118,7 +108,6 @@ export async function POST(request: Request) {
             },
           },
         },
-        include: { items: true },
       });
 
       if (productVariantId) {
@@ -138,6 +127,7 @@ export async function POST(request: Request) {
         phone: body.phone,
         address: body.address,
         city: body.city,
+        productName,
         label,
         quantity: body.quantity,
         totalBdt: totalPriceBdtAtOrder,
@@ -148,7 +138,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, orderNumber: order.orderNumber });
   } catch (error) {
     if (error instanceof ZodError) {
-      return NextResponse.json({ success: false, message: "Invalid order payload." }, { status: 400 });
+      return NextResponse.json(
+        { success: false, message: "Invalid order payload.", errors: error.flatten() },
+        { status: 400 },
+      );
     }
 
     console.error("Order creation failed:", error);

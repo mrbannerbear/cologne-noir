@@ -1,14 +1,12 @@
-import { PrismaClient, Gender, VariantSize } from "@prisma/client";
-import { featuredProducts } from "../lib/catalog";
-
-const prisma = new PrismaClient();
+import { Gender, VariantSize } from "@prisma/client";
+import { prisma } from "../lib/prisma";
+import { seedProducts } from "../lib/seed-data";
 
 async function main() {
-  for (const product of featuredProducts) {
+  for (const product of seedProducts) {
     await prisma.product.upsert({
-      where: { id: product.slug },
+      where: { slug: product.slug },
       update: {
-        slug: product.slug,
         brand: product.brand,
         name: product.name,
         gender: product.gender as Gender,
@@ -30,7 +28,6 @@ async function main() {
         },
       },
       create: {
-        id: product.slug,
         slug: product.slug,
         brand: product.brand,
         name: product.name,

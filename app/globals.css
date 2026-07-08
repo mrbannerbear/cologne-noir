@@ -13,29 +13,31 @@
   --color-ring: var(--ring);
   --color-card: var(--surface);
   --color-card-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
-  --font-heading: var(--font-sans);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-geist-sans);
   --radius-lg: var(--radius-lg);
   --radius-xl: var(--radius-xl);
 }
 
 :root {
-  --background: #f8f7f4;
-  --surface: #ffffff;
-  --foreground: #111111;
-  --muted: #6f6f73;
-  --border-subtle: rgba(17, 17, 17, 0.08);
-  --ring: rgba(17, 17, 17, 0.22);
+  --background: #000000;
+  --surface: #0d0d0d;
+  --foreground: #fafafa;
+  --muted: #8a8a8e;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --ring: rgba(255, 255, 255, 0.22);
   --radius-lg: 1.125rem;
   --radius-xl: 1.5rem;
-  --glass-fill: rgba(255, 255, 255, 0.55);
-  --glass-fill-hover: rgba(255, 255, 255, 0.72);
-  --glass-fill-pressed: rgba(255, 255, 255, 0.84);
-  --glass-border: rgba(17, 17, 17, 0.08);
-  --glass-highlight: rgba(255, 255, 255, 0.9);
-  --glass-blur: 24px;
-  --glass-shadow: 0 24px 60px rgba(17, 17, 17, 0.08);
+  --glass-fill: rgba(255, 255, 255, 0.1);
+  --glass-fill-hover: rgba(255, 255, 255, 0.16);
+  --glass-fill-pressed: rgba(255, 255, 255, 0.22);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-highlight: rgba(255, 255, 255, 0.35);
+  --glass-blur: 20px;
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --glass-fill-on-light: rgba(0, 0, 0, 0.08);
+  --glass-border-on-light: rgba(0, 0, 0, 0.12);
 }
 
 @layer base {
@@ -47,27 +49,19 @@
   body {
     @apply min-h-screen bg-background text-foreground antialiased;
     background:
-      radial-gradient(circle at top, rgba(17, 17, 17, 0.05), transparent 28%),
-      radial-gradient(circle at 20% 20%, rgba(17, 17, 17, 0.03), transparent 20%),
-      linear-gradient(180deg, #ffffff 0%, #faf9f6 54%, #f5f4f1 100%);
+      radial-gradient(circle at top, rgba(255, 255, 255, 0.04), transparent 28%),
+      radial-gradient(circle at 80% 0%, rgba(255, 255, 255, 0.02), transparent 22%),
+      linear-gradient(180deg, #000000 0%, #050505 54%, #0a0a0a 100%);
   }
   * {
     border-color: var(--border-subtle);
   }
   ::selection {
-    background: rgba(17, 17, 17, 0.12);
+    background: rgba(255, 255, 255, 0.16);
     color: var(--foreground);
   }
   :where(a, button, input, textarea, select, summary) {
     outline-color: var(--ring);
-  }
-  :where(button, a) {
-    transition-property: transform, background-color, border-color, box-shadow, opacity;
-    transition-duration: 180ms;
-    transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-  :where(button, a):active {
-    transform: scale(0.98);
   }
 }
 
@@ -87,4 +81,10 @@
 
 @utility glass-press {
   background: var(--glass-fill-pressed);
+}
+
+@utility label-caps {
+  font-size: 0.6875rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }

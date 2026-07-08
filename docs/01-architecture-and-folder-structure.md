@@ -75,8 +75,9 @@ cologne-noir/
 │   └── (static assets only — product photos go in Vercel Blob, not here)
 │
 ├── .env.local.example
-├── next.config.js
-├── tailwind.config.ts
+├── AGENTS.md                     # scaffolded by create-next-app — guidance for AI coding agents
+├── next.config.ts
+├── postcss.config.mjs            # Tailwind v4 config lives here + in globals.css, not a tailwind.config.ts
 ├── tsconfig.json
 ├── bunfig.toml
 ├── bun.lockb
@@ -93,4 +94,26 @@ cologne-noir/
 - Currency is BDT (৳), formatted via `lib/format.ts`.
 - No client-side state library needed (no cart in Phase 1) — component-local state is enough.
 - Package manager is **Bun** throughout: `bun install`, `bun add`, `bun run dev`, `bunx <tool>`
-  instead of the npm/npx equivalents. Commit `bun.lockb`, not `package-lock.json`.
+  instead of the npm/npx equivalents. Commit `bun.lockb`, not `package-lock.json`. `package.json`
+  scripts must use `bun --bun next dev/build/start` so Bun's runtime is actually used, not just
+  Bun-as-installer running Node under the hood.
+
+## Next.js 16-specific notes
+- **Turbopack is the default bundler** — no config needed, just don't pass `--webpack` unless
+  you hit a compatibility issue with a specific package.
+- **`params` and `searchParams` are async** in Server Components (`app/products/[slug]/page.tsx`,
+  etc.) — they're `Promise`s now, not plain objects:
+  ```tsx
+  export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
+    // ...
+  }
+  ```
+- **Tailwind v4** is CSS-first — there's no `tailwind.config.ts`. Design tokens (including the
+  glass CSS variables from `04-ui-ux-design-system.md`) are declared directly in `globals.css`
+  via `@theme` / `:root`, imported with `@import "tailwindcss";` at the top of the file.
+- **Middleware is now `proxy.ts`** (renamed from `middleware.ts`) — not used in Phase 1 (no
+  auth yet), but relevant once Phase 2's admin dashboard needs route protection.
+- `create-next-app` scaffolds an `AGENTS.md` at the project root — keep it; it's useful context
+  for any AI coding agent (including whichever one builds this from these docs) and doesn't
+  affect the running app.

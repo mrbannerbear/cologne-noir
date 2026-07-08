@@ -12,6 +12,35 @@ This pairs well with your existing IG aesthetic (dark, minimal, moody product ph
 think of the UI chrome (buttons, nav, sheets, cards) as glass floating over that dark
 photography, rather than competing with it.
 
+## Config note (Tailwind v4)
+Next.js 16 scaffolds Tailwind v4, which is CSS-first — there's no `tailwind.config.ts` to edit.
+Declare every token below directly in `app/globals.css`:
+
+```css
+@import "tailwindcss";
+
+@theme {
+  --color-background: #000000;
+  --color-surface: #0D0D0D;
+  --color-foreground: #FAFAFA;
+  --color-muted: #8A8A8E;
+  /* glass tokens are plain CSS variables, not Tailwind theme colors, since they use rgba() */
+}
+
+:root {
+  --glass-fill: rgba(255, 255, 255, 0.10);
+  --glass-fill-hover: rgba(255, 255, 255, 0.16);
+  --glass-fill-pressed: rgba(255, 255, 255, 0.22);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-highlight: rgba(255, 255, 255, 0.35);
+  --glass-blur: 20px;
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+```
+`@theme` tokens become usable as Tailwind utilities (e.g. `bg-background`, `text-muted`); the
+glass variables stay as plain CSS custom properties referenced from the `.glass` class shown
+below, since `rgba()` values with variable opacity don't map cleanly to Tailwind's color utilities.
+
 ## Color palette (monochrome, dark-first)
 
 | Token | Value | Use |

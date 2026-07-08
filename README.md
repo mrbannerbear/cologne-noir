@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Cologne Noir
 
-## Getting Started
+Catalog and order-intake site for **Cologne Noir** — an authentic fragrance decant and full-bottle
+business shipping across Bangladesh. Built to replace "DM to order" with a real product catalog,
+while keeping fulfillment personal: every order is confirmed by hand before it ships.
 
-First, run the development server:
+**Live site:** _add URL once deployed_
+**Instagram:** [@cologne.noir](https://instagram.com/cologne.noir)
+
+---
+
+## What this is
+
+- Browse fragrances by gender, brand, and notes (top / middle / base pyramid)
+- Order preset decant sizes (5ml / 10ml / 15ml) or a custom amount, priced automatically from
+  the bottle's actual size (75ml / 100ml / 125ml — not everything is 100ml)
+- Simple cash-on-delivery order form — no cart, no payment gateway yet, by design
+- Instant WhatsApp alert on every new order
+- Apple-style "liquid glass" UI in a strict black/white/grey palette
+
+## Tech stack
+
+| | |
+|---|---|
+| Runtime | [Bun](https://bun.sh) |
+| Framework | Next.js 16+ (App Router), TypeScript |
+| Styling | Tailwind CSS + custom glass utility layer |
+| Components | shadcn/ui (Radix primitives), restyled |
+| Motion | Framer Motion |
+| Database | PostgreSQL ([Neon](https://neon.tech)) |
+| ORM | Prisma |
+| Validation | Zod |
+| Notifications | WhatsApp (CallMeBot → Meta Cloud API) |
+| Images | Vercel Blob |
+| Hosting | Vercel |
+
+## Project docs
+
+Full specs live in [`/docs`](./docs) — read in order if you're picking this project up fresh
+(human or AI coding agent):
+
+1. [Project brief](./docs/00-project-brief.md) — scope, goals, non-goals
+2. [Architecture & folder structure](./docs/01-architecture-and-folder-structure.md)
+3. [Database schema](./docs/02-database-schema.md) — Prisma models, decant pricing logic
+4. [Features & user flows](./docs/03-features-and-user-flows.md) — order flow, API contract
+5. [UI/UX design system](./docs/04-ui-ux-design-system.md) — liquid glass spec, responsive rules
+6. [WhatsApp notifications](./docs/05-whatsapp-notifications.md)
+7. [Setup & deployment](./docs/06-setup-deployment.md)
+8. [Roadmap](./docs/07-roadmap-phase2.md) — admin dashboard, payments, what's deliberately deferred
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+bun install
+cp .env.local.example .env.local   # fill in DATABASE_URL, WhatsApp keys, Blob token
+bunx prisma migrate dev
+bunx prisma db seed
+bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Full setup and Vercel deployment steps: [`docs/06-setup-deployment.md`](./docs/06-setup-deployment.md).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Managing inventory
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+No admin dashboard yet (intentionally — see [roadmap](./docs/07-roadmap-phase2.md)). Products
+and stock are managed directly via Prisma Studio:
 
-## Learn More
+```bash
+bunx prisma studio
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Status
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+🚧 Phase 1 — catalog + manual-confirm ordering. Not yet handling payments or accounts by design.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## License
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Private/proprietary — not for reuse without permission.

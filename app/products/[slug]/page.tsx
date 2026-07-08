@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { featuredProducts, getProductBySlug } from "@/lib/catalog";
 import { formatBdt } from "@/lib/format";
+import { OrderForm } from "@/components/order-form";
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
@@ -106,23 +107,22 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </div>
           </section>
 
-          <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-            <article className="glass rounded-[1.5rem] p-5">
-              <span className="inline-block h-2.5 w-2.5 rounded-full bg-black/60" />
-              <h2 className="mt-4 text-lg font-medium text-black">Confirmation flow</h2>
-              <p className="mt-2 text-sm leading-6 text-black/60">
-                Orders route to a human first. WhatsApp confirmation stays in the loop so the experience feels personal,
-                not automated.
-              </p>
-            </article>
-            <article className="glass rounded-[1.5rem] p-5">
-              <span className="inline-block h-2.5 w-2.5 rounded-full bg-black/60" />
-              <h2 className="mt-4 text-lg font-medium text-black">Next step</h2>
-              <p className="mt-2 text-sm leading-6 text-black/60">
-                The order form and API route are the next build slice after this shell is verified.
-              </p>
-            </article>
-          </section>
+          <OrderForm
+            product={{
+              id: product.slug,
+              brand: product.brand,
+              name: product.name,
+              actualBottleMl: product.actualBottleMl,
+              actualBottleFullPriceBdt: product.actualBottleFullPriceBdt,
+              variants: product.variants.map((variant) => ({
+                id: `${product.slug}:${variant.size}`,
+                size: variant.size,
+                label: variant.label,
+                priceBdt: variant.priceBdt,
+                stockQty: variant.stockQty,
+              })),
+            }}
+          />
         </aside>
       </div>
 

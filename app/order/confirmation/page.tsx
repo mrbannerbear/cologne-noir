@@ -1,6 +1,12 @@
 import Link from "next/link";
 
-export default function OrderConfirmationPage() {
+type OrderConfirmationProps = {
+  searchParams: Promise<{ orderNumber?: string }>;
+};
+
+export default async function OrderConfirmationPage({ searchParams }: OrderConfirmationProps) {
+  const { orderNumber } = await searchParams;
+
   return (
     <div className="mx-auto flex w-full max-w-3xl items-center px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <section className="glass w-full rounded-[2rem] p-6 text-center sm:p-10">
@@ -9,6 +15,7 @@ export default function OrderConfirmationPage() {
         <h1 className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-black sm:text-5xl">
           Thanks. We’ll reach out shortly to confirm the order.
         </h1>
+        {orderNumber ? <p className="mt-4 text-sm uppercase tracking-[0.28em] text-black/45">{orderNumber}</p> : null}
         <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-black/62 sm:text-lg">
           The next step is a human check-in over WhatsApp or phone. That keeps the process clear, accurate, and aligned
           with how Cologne Noir already fulfills orders.

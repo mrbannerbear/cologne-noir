@@ -34,7 +34,7 @@ you already do well.
 
 ## Tech stack (locked in)
 - **Runtime/package manager:** Bun (not Node/npm)
-- **Framework:** Next.js 14+ (App Router), TypeScript
+- **Framework:** Next.js 16+ (App Router), TypeScript
 - **Styling:** Tailwind CSS + custom "liquid glass" utility layer
 - **Component base:** shadcn/ui (Radix primitives) for accessibility, heavily restyled
 - **Motion:** Framer Motion (for the spring/glass micro-interactions)

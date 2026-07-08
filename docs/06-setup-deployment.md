@@ -9,16 +9,33 @@
 ## Local setup
 
 ```bash
-bunx create-next-app@latest cologne-noir --typescript --tailwind --app
+bunx create-next-app@latest cologne-noir --typescript --tailwind --app --turbopack --import-alias "@/*"
 cd cologne-noir
+```
 
-bun add prisma @prisma/client zod framer-motion
+Say yes to the AGENTS.md prompt. Then, in `package.json`, force the scripts to actually run
+under Bun's runtime (by default `next` still runs under Node even though Bun installed it):
+
+```json
+"scripts": {
+  "dev": "bun --bun next dev",
+  "build": "bun --bun next build",
+  "start": "bun --bun next start",
+  "lint": "eslint"
+}
+```
+
+```bash
+bun add prisma @prisma/client zod framer-motion @vercel/blob
+bun add -d tsx dotenv-cli    # tsx runs prisma/seed.ts; dotenv-cli lets Prisma read .env.local
 bunx shadcn@latest init      # sets up shadcn/ui as the component foundation
 bunx prisma init
 ```
 
 This creates `prisma/schema.prisma` — replace its contents with the schema from
-`02-database-schema.md`.
+`02-database-schema.md`. Delete the `.env` file `prisma init` creates — this project keeps a
+single source of truth for secrets in `.env.local` (Next.js's native convention), and uses
+`dotenv-cli` to let Prisma commands read from it instead of maintaining two env files.
 
 ## Environment variables
 
@@ -47,10 +64,15 @@ instead — so anyone (or any agent) setting up the project knows what's needed.
 
 ## Database setup
 
+Run all Prisma commands through `dotenv-cli` so they pick up `DATABASE_URL` from `.env.local`:
+
 ```bash
-bunx prisma migrate dev --name init      # creates tables in Neon from your schema
-bunx prisma db seed                      # runs prisma/seed.ts to load initial products
+bunx dotenv -e .env.local -- bunx prisma migrate dev --name init   # creates tables in Neon
+bunx dotenv -e .env.local -- bunx prisma db seed                   # loads initial products
 ```
+
+(Optional: add these as `package.json` scripts — e.g. `"db:migrate"`, `"db:seed"` — once you're
+tired of typing the full `dotenv -e .env.local --` prefix.)
 
 ## Running locally
 
@@ -72,7 +94,7 @@ bun run dev
 ## Ongoing inventory management (Phase 1)
 
 ```bash
-bunx prisma studio
+bunx dotenv -e .env.local -- bunx prisma studio
 ```
 Run this locally with `DATABASE_URL` pointed at your **production** Neon database (same value
 as in Vercel) to add/edit products and update stock without touching code.

@@ -33,7 +33,6 @@ function toProductView(product: Product & { variants: ProductVariant[] }): Produ
     middleNotes: product.middleNotes,
     baseNotes: product.baseNotes,
     actualBottleMl: product.actualBottleMl,
-    actualBottleFullPriceBdt: product.actualBottleFullPriceBdt,
     images: product.images,
     isActive: product.isActive,
     variants,

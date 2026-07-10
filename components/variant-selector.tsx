@@ -5,7 +5,6 @@ import { useMemo, useState } from "react";
 import { customDecantPrice } from "@/lib/pricing";
 import { formatBdt } from "@/lib/format";
 import type { ProductVariantView } from "@/types";
-import { GlassPill } from "@/components/ui/glass-pill";
 import { cn } from "@/lib/utils";
 
 export type VariantSelection =
@@ -15,7 +14,6 @@ export type VariantSelection =
 type VariantSelectorProps = {
   product: {
     actualBottleMl: number;
-    actualBottleFullPriceBdt: number;
     variants: ProductVariantView[];
   };
   selection: VariantSelection;
@@ -26,9 +24,14 @@ export function VariantSelector({ product, selection, onChange }: VariantSelecto
   const [customOpen, setCustomOpen] = useState(selection.mode === "custom");
   const [customMl, setCustomMl] = useState(selection.mode === "custom" ? String(selection.customMl) : "20");
 
+  const fullBottlePrice = useMemo(
+    () => product.variants.find((v) => v.size === "FULL_BOTTLE")?.priceBdt ?? 0,
+    [product.variants],
+  );
+
   const customPrice = useMemo(
-    () => customDecantPrice(product, Number(customMl || 0)),
-    [product, customMl],
+    () => customDecantPrice(fullBottlePrice, product.actualBottleMl, Number(customMl || 0)),
+    [fullBottlePrice, product.actualBottleMl, customMl],
   );
 
   function selectPreset(variant: ProductVariantView) {
@@ -48,7 +51,7 @@ export function VariantSelector({ product, selection, onChange }: VariantSelecto
       mode: "custom",
       customMl: ml,
       label: `${ml}ml Custom Decant`,
-      unitPrice: customDecantPrice(product, ml),
+      unitPrice: customDecantPrice(fullBottlePrice, product.actualBottleMl, ml),
     });
   }
 
@@ -60,65 +63,99 @@ export function VariantSelector({ product, selection, onChange }: VariantSelecto
         mode: "custom",
         customMl: ml,
         label: `${ml}ml Custom Decant`,
-        unitPrice: customDecantPrice(product, ml),
+        unitPrice: customDecantPrice(fullBottlePrice, product.actualBottleMl, ml),
       });
     }
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap gap-2">
+    <div className="space-y-4 text-foreground">
+      <p className="label-caps text-[10px] text-muted">Select Volume</p>
+      
+      {/* Rectangular Variant Selection Buttons */}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {product.variants.map((variant) => {
-          const selected = selection.mode === "preset" && selection.variantId === variant.id;
+          const isSelected = selection.mode === "preset" && selection.variantId === variant.id;
           const soldOut = variant.stockQty <= 0;
 
           return (
-            <GlassPill
+            <button
               key={variant.id}
-              selected={selected}
+              type="button"
               disabled={soldOut}
               onClick={() => selectPreset(variant)}
-              className={cn("h-auto rounded-[1rem] px-4 py-3 text-left normal-case tracking-normal")}
+              className={cn(
+                "rounded-[2px] border p-3 text-left transition-all duration-300",
+                isSelected
+                  ? "border-ink bg-ink text-white font-medium"
+                  : "border-border bg-transparent text-foreground hover:border-foreground",
+                soldOut && "cursor-not-allowed border-border bg-transparent text-muted/65 line-through opacity-50"
+              )}
             >
-              <span className="block text-sm font-medium">{variant.label}</span>
-              <span className="mt-0.5 block text-xs text-muted">
-                {soldOut ? "Sold out" : `${formatBdt(variant.priceBdt)} · ${variant.stockQty} left`}
+              <span className="block text-xs label-caps tracking-wider">{variant.label}</span>
+              <span className={cn(
+                "mt-1 block text-xs font-mono",
+                isSelected ? "text-white/80" : "text-muted"
+              )}>
+                {soldOut ? "Sold out" : `${formatBdt(variant.priceBdt)}`}
               </span>
-            </GlassPill>
+            </button>
           );
         })}
-        <GlassPill
-          selected={selection.mode === "custom"}
+        
+        <button
+          type="button"
           onClick={selectCustom}
-          className="h-auto rounded-[1rem] px-4 py-3 text-left normal-case tracking-normal"
+          className={cn(
+            "rounded-[2px] border p-3 text-left transition-all duration-300",
+            selection.mode === "custom"
+              ? "border-ink bg-ink text-white font-medium"
+              : "border-border bg-transparent text-foreground hover:border-foreground"
+          )}
         >
-          <span className="block text-sm font-medium">Custom amount</span>
-          <span className="mt-0.5 block text-xs text-muted">Made to order</span>
-        </GlassPill>
+          <span className="block text-xs label-caps tracking-wider">Custom Size</span>
+          <span className={cn(
+            "mt-1 block text-xs font-mono",
+            selection.mode === "custom" ? "text-white/80" : "text-muted"
+          )}>
+            Made to order
+          </span>
+        </button>
       </div>
 
+      {/* Underline-style input section */}
       <AnimatePresence initial={false}>
         {customOpen ? (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 420, damping: 34 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
             className="overflow-hidden"
           >
-            <label className="block rounded-[1.25rem] border border-white/10 bg-white/5 p-4">
-              <span className="label-caps text-muted">Custom ml</span>
-              <div className="mt-3 flex items-center gap-3">
-                <input
-                  type="number"
-                  min="1"
-                  value={customMl}
-                  onChange={(event) => updateCustomMl(event.target.value)}
-                  className="w-full rounded-[1rem] border border-white/12 bg-black/40 px-4 py-3 text-foreground outline-none"
-                />
-                <p className="shrink-0 text-sm text-foreground">{formatBdt(customPrice)}</p>
+            <div className="border-t border-border/80 pt-4 mt-2">
+              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+                <div className="flex-1 space-y-2">
+                  <span className="label-caps text-[9px] text-muted">millilitre quantity (ml)</span>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min="1"
+                      value={customMl}
+                      onChange={(event) => updateCustomMl(event.target.value)}
+                      className="w-full bg-transparent border-b border-border focus:border-ink pb-2 text-sm text-foreground outline-none focus:border-b-2 transition-all duration-200"
+                      placeholder="e.g. 20"
+                    />
+                  </div>
+                </div>
+                <div className="shrink-0 pb-2 text-right">
+                  <p className="label-caps text-[9px] text-muted">derived price</p>
+                  <p className="font-mono text-sm text-foreground font-semibold mt-1">
+                    {formatBdt(customPrice)}
+                  </p>
+                </div>
               </div>
-            </label>
+            </div>
           </motion.div>
         ) : null}
       </AnimatePresence>

@@ -44,14 +44,14 @@ cologne-noir/
 │           └── route.ts          # POST: validate, price, create order, notify WhatsApp
 │
 ├── components/
-│   ├── ui/                       # shadcn/ui primitives, restyled for the glass look
-│   │   ├── glass-button.tsx
-│   │   ├── glass-card.tsx
-│   │   ├── glass-sheet.tsx       # bottom sheet for the order form
+│   ├── ui/                       # shadcn/ui primitives (Base UI), restyled per 04-ui-ux-design-system.md
+│   │   ├── button.tsx            # solid-fill primary + outlined secondary variants
+│   │   ├── product-card.tsx
+│   │   ├── order-sheet.tsx       # bottom sheet (mobile) / centered panel (desktop) order form
 │   │   └── ...
 │   ├── nav-bar.tsx
 │   ├── footer.tsx
-│   ├── product-card.tsx          # catalog grid item
+│   ├── hero-split.tsx            # split-screen photographic hero
 │   ├── product-grid.tsx
 │   ├── notes-pyramid.tsx         # top/middle/base notes display
 │   ├── variant-selector.tsx      # presets (5/10/15ml, full bottle) + custom ml input
@@ -86,7 +86,7 @@ cologne-noir/
 
 ## Conventions for whoever/whatever builds this
 - Server Components by default. Only mark a component `"use client"` if it needs interactivity
-  (the order form, the variant selector, the glass hover/press animations, mobile nav toggle).
+  (the order form, the variant selector, scroll-triggered fade animations, mobile nav toggle).
 - All database access goes through `lib/prisma.ts` — never instantiate `PrismaClient` elsewhere.
 - All external input (the order form, including custom decant ml) is validated with Zod in
   `lib/validations.ts` **and** re-priced server-side in `lib/pricing.ts` — never trust a price

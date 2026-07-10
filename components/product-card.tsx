@@ -17,47 +17,62 @@ export function ProductCard({ product, className }: ProductCardProps) {
     <Link
       href={`/products/${product.slug}`}
       className={cn(
-        "group relative overflow-hidden rounded-[1.25rem] border border-white/10 bg-surface transition hover:-translate-y-0.5 hover:border-white/18",
-        className,
+        "group block space-y-4 hover:opacity-85 transition-opacity duration-300",
+        className
       )}
     >
-      <div className="relative aspect-[4/5] overflow-hidden bg-[linear-gradient(160deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))]">
+      
+      {/* Product Image Frame */}
+      <div className="relative aspect-[4/5] overflow-hidden border border-border bg-background-warm">
         {coverImage ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={coverImage} alt={`${product.brand} ${product.name}`} className="h-full w-full object-cover" />
+          <img
+            src={coverImage}
+            alt={`${product.brand} ${product.name}`}
+            className="h-full w-full object-cover grayscale contrast-[105%]"
+          />
         ) : (
-          <div className="flex h-full flex-col justify-between p-4">
+          <div className="flex h-full flex-col justify-between p-4 bg-background-warm">
             <div className="flex items-start justify-between gap-3">
-              <span className="glass rounded-full px-3 py-1 label-caps text-foreground">
+              <span className="text-[10px] label-caps text-muted">
                 {genderLabel(product.gender)}
               </span>
-              <span className="rounded-full border border-white/10 px-3 py-1 label-caps text-muted">
+              <span className="text-[10px] font-mono text-muted">
                 {product.actualBottleMl}ml
               </span>
             </div>
-            <div>
-              <p className="label-caps text-muted">{product.brand}</p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">{product.name}</h2>
+            <div className="space-y-1">
+              <p className="label-caps text-[9px] text-muted">{product.brand}</p>
+              <h2 className="font-display text-xl font-light text-foreground">{product.name}</h2>
             </div>
           </div>
         )}
+        
+        {/* Sold Out Overlay (Editorial Flat Style) */}
         {soldOut ? (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/55 backdrop-blur-[2px]">
-            <span className="glass rounded-full px-4 py-2 label-caps text-foreground">Sold out</span>
+          <div className="absolute inset-0 flex items-center justify-center bg-background-warm/90 backdrop-blur-[1px]">
+            <span className="border border-ink bg-transparent text-ink px-4 py-2 text-[10px] label-caps font-semibold">
+              Sold out
+            </span>
           </div>
         ) : null}
       </div>
-      <div className="flex items-end justify-between gap-4 p-4">
-        <div>
-          <p className="label-caps text-muted">{product.brand}</p>
-          <p className="mt-1 text-lg font-medium text-foreground">{product.name}</p>
-          <p className="mt-1 text-sm text-muted">
-            {formatBdt(product.priceFloor)}
-            {product.priceCeiling > product.priceFloor ? ` – ${formatBdt(product.priceCeiling)}` : ""}
-          </p>
+
+      {/* Product Details (Print Style) */}
+      <div className="space-y-1">
+        <div className="flex justify-between items-baseline gap-2">
+          <p className="label-caps text-[10px] text-muted">{product.brand}</p>
+          <p className="text-[10px] font-mono text-muted">{genderLabel(product.gender)}</p>
         </div>
-        <span className="text-sm text-muted group-hover:text-foreground">View</span>
+        <p className="font-sans text-sm font-medium text-foreground tracking-tight">
+          {product.name}
+        </p>
+        <p className="font-mono text-xs text-muted">
+          {formatBdt(product.priceFloor)}
+          {product.priceCeiling > product.priceFloor ? ` – ${formatBdt(product.priceCeiling)}` : ""}
+        </p>
       </div>
+
     </Link>
   );
 }

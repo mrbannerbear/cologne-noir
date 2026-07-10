@@ -24,7 +24,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const products = await getActiveProducts(filter);
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
+    <div className="mx-auto w-full max-w-360xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-3xl space-y-4">
           <p className="label-caps text-muted">Catalog</p>

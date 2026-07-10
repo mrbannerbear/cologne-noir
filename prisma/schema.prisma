@@ -15,7 +15,7 @@ enum Gender {
 enum VariantSize {
   DECANT_5ML
   DECANT_10ML
-  DECANT_15ML
+  DECANT_100ML
   FULL_BOTTLE
 }
 
@@ -32,13 +32,13 @@ model Product {
   slug                     String          @unique
   brand                    String
   name                     String
+  concentration            String?
   gender                   Gender
   description              String?         @db.Text
   topNotes                 String[]
   middleNotes              String[]
   baseNotes                String[]
   actualBottleMl           Int
-  actualBottleFullPriceBdt  Int
   images                   String[]
   isActive                 Boolean         @default(true)
   createdAt                DateTime        @default(now())

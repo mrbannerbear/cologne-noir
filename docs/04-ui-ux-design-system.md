@@ -1,193 +1,196 @@
 # UI/UX Design System
 
-## Direction
-Apple's "liquid glass" language (as seen across recent iOS/visionOS/macOS UI): translucent,
-frosted surfaces that feel like they're made of glass — light refracts through them, they have
-a soft specular highlight, and they respond to touch with a subtle spring/bounce rather than a
-flat state change. Applied here in a **strict monochrome palette** — white, black, and greys
-only. No gold, no color accents. The glass effect itself carries all the visual richness, so
-the palette can stay quiet.
+## Direction (replaces the earlier "liquid glass" spec)
+Editorial, French-perfumery-house aesthetic — think a print magazine spread more than an app.
+Reference points: split-screen photographic heroes, high-contrast serif wordmarks, hairline
+rules instead of borders/shadows, torn-paper and polaroid-stack collage moments reserved for
+storytelling sections, and a slightly desaturated, "hazy" film-grain quality across photography.
+Calm and confident rather than flashy — nothing bounces, nothing glows. The previous glass
+system (blur, spring animations, rounded pill CTAs) is fully retired; this is closer to print
+design translated to the web than to a typical SaaS/app UI.
 
-This pairs well with your existing IG aesthetic (dark, minimal, moody product photography) —
-think of the UI chrome (buttons, nav, sheets, cards) as glass floating over that dark
-photography, rather than competing with it.
+## Color palette (warm monochrome — not pure black/white)
+
+| Token | Value | Use |
+|---|---|---|
+| `--background` | `#FFFFFF` | Default page background (catalog, product pages) |
+| `--background-warm` | `#F6F4EF` | Off-white/cream — storytelling sections, cards, form backgrounds |
+| `--surface-paper` | `#EAE6DC` | Warm grey-beige "paper" texture backgrounds (newsletter, collage sections) |
+| `--foreground` | `#181818` | Primary text — soft black, not pure `#000` |
+| `--muted` | `#6E6B64` | Secondary text, captions, note labels |
+| `--border` | `#D9D5C9` | Hairline rules — the primary structural device, replaces cards/shadows |
+| `--ink` | `#000000` | Reserved for solid CTA fills and the wordmark only |
+
+No blue, no gold, no saturated accent color anywhere. Where the reference images show a hint of
+warmth (cream envelope paper, beige postcard), that warmth comes from `--background-warm` and
+`--surface-paper`, not from a color accent — the palette stays achromatic/warm-neutral throughout.
+
+## The "hazy" texture layer
+Add a fixed, page-wide film-grain overlay so photography and flat color fields feel like they
+belong to the same slightly-textured world, rather than crisp separated to a decorative image:
+
+```css
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url('/noise.png'); /* small tiling grain texture, or an inline SVG turbulence filter */
+  background-repeat: repeat;
+}
+```
+Keep the opacity very low (3–5%) — the goal is a barely-there quality, not a visible filter.
+
+**Photography note (content, not code):** the reference direction leans on clean, light-background
+product shots (image on white/cream) plus separate moody black-and-white lifestyle/scene
+photography for storytelling sections. Your current IG catalog photos are shot on a dark
+background — worth re-shooting key hero/catalog images on a neutral light backdrop to match this
+direction; a CSS filter can nudge consistency (`filter: grayscale(10%) contrast(105%)` on
+lifestyle images) but can't fix a fundamentally dark-background product photo. Flag this as a
+content task alongside the build, not something to solve in code.
+
+## Typography
+- **Display serif (wordmark, big headlines):** `Bodoni Moda` (Google Fonts) — high-contrast,
+  tall, classic Didone serif, matches the "ST. ROSE" wordmark and large editorial headlines
+  in the reference. Use at light/regular weight, generous letter-spacing on the wordmark itself.
+- **Body / UI / nav:** `Inter`, used sparingly and quietly — small size, uppercase, wide
+  letter-spacing (`tracking-[0.15em]`) for nav links and labels ("CATALOG", "ABOUT US",
+  "SEARCH"). This is the workhorse text; keep it out of the spotlight, let the serif carry
+  personality.
+- **Editorial/mono accent:** `Courier Prime` (Google Fonts) — used sparingly for captions,
+  placeholder/lorem-style copy, price labels in some contexts, or small print. This is what
+  gives the "zine/collage" texture in the postcard reference. Don't use it for primary UI text
+  — it's a seasoning, not a base font.
+- Headings are light/regular weight, never bold — bold Didone serifs at display size read
+  heavy and cheap. Size and spacing carry hierarchy, not weight.
 
 ## Config note (Tailwind v4)
-Next.js 16 scaffolds Tailwind v4, which is CSS-first — there's no `tailwind.config.ts` to edit.
-Declare every token below directly in `app/globals.css`:
-
+Declare tokens in `app/globals.css`:
 ```css
 @import "tailwindcss";
 
 @theme {
-  --color-background: #000000;
-  --color-surface: #0D0D0D;
-  --color-foreground: #FAFAFA;
-  --color-muted: #8A8A8E;
-  /* glass tokens are plain CSS variables, not Tailwind theme colors, since they use rgba() */
-}
-
-:root {
-  --glass-fill: rgba(255, 255, 255, 0.10);
-  --glass-fill-hover: rgba(255, 255, 255, 0.16);
-  --glass-fill-pressed: rgba(255, 255, 255, 0.22);
-  --glass-border: rgba(255, 255, 255, 0.18);
-  --glass-highlight: rgba(255, 255, 255, 0.35);
-  --glass-blur: 20px;
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --color-background: #FFFFFF;
+  --color-background-warm: #F6F4EF;
+  --color-surface-paper: #EAE6DC;
+  --color-foreground: #181818;
+  --color-muted: #6E6B64;
+  --color-border: #D9D5C9;
+  --color-ink: #000000;
+  --font-display: "Bodoni Moda", serif;
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "Courier Prime", monospace;
 }
 ```
-`@theme` tokens become usable as Tailwind utilities (e.g. `bg-background`, `text-muted`); the
-glass variables stay as plain CSS custom properties referenced from the `.glass` class shown
-below, since `rgba()` values with variable opacity don't map cleanly to Tailwind's color utilities.
 
-## Color palette (monochrome, dark-first)
-
-| Token | Value | Use |
-|---|---|---|
-| `--background` | `#000000` | Page background |
-| `--surface` | `#0D0D0D` | Base layer under glass panels |
-| `--foreground` | `#FAFAFA` | Primary text |
-| `--muted` | `#8A8A8E` | Secondary text, captions |
-| `--border-subtle` | `rgba(255,255,255,0.08)` | Hairline dividers |
-| `--danger` | `#D4D4D8` on `rgba(255,255,255,0.06)` | Sold out / errors — communicated via icon + text weight, not red, to stay monochrome |
-
-### Glass surface tokens
+**shadcn preset correction:** we initialized with the **Maia** preset (soft, rounded corners) —
+that was chosen for the earlier glass-pill direction and no longer fits. This new direction
+wants **sharp, mostly-zero-radius rectangles** (see the buttons below). Rather than re-running
+`shadcn init`, just override the radius token directly:
 ```css
---glass-fill: rgba(255, 255, 255, 0.10);
---glass-fill-hover: rgba(255, 255, 255, 0.16);
---glass-fill-pressed: rgba(255, 255, 255, 0.22);
---glass-border: rgba(255, 255, 255, 0.18);
---glass-highlight: rgba(255, 255, 255, 0.35);   /* top-edge specular line */
---glass-blur: 20px;
---glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+@theme {
+  --radius: 0.125rem; /* effectively square — 2px, not fully sharp, to avoid harsh aliasing */
+}
 ```
+This single change flows through every shadcn component Maia's preset touched. No need to redo
+the CLI setup.
 
-For light-background contexts (e.g. a photo-heavy hero), invert to dark glass:
+## Structural device: hairline rules, not cards/shadows
+The reference uses thin `1px` rules — vertical dividers between form fields (the postcard's
+Name/Email split), horizontal rules under nav sections — as the primary way to organize space,
+instead of bordered cards or drop shadows. Default to this:
 ```css
---glass-fill-on-light: rgba(0, 0, 0, 0.08);
---glass-border-on-light: rgba(0, 0, 0, 0.12);
+.hairline { border-color: var(--color-border); border-width: 1px; }
 ```
+Reserve actual "card" containers (background fill + padding) for the newsletter postcard and
+similar deliberately-designed set-piece sections — not for routine UI like product grids.
 
-## The liquid glass effect, concretely
-
-A glass CTA/button/card is built from layered CSS, not an image:
-
-```css
-.glass {
-  background: var(--glass-fill);
-  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-  border: 1px solid var(--glass-border);
-  border-radius: 20px; /* generous, continuous-curve radius — avoid sharp corners entirely */
-  box-shadow:
-    var(--glass-shadow),
-    inset 0 1px 0 var(--glass-highlight); /* the specular top edge that sells "glass" */
-  transition: background 0.2s ease, transform 0.15s ease;
-}
-
-.glass:hover {
-  background: var(--glass-fill-hover);
-}
-
-.glass:active {
-  background: var(--glass-fill-pressed);
-  transform: scale(0.97); /* the "liquid" press — pairs with a spring animation, see below */
-}
-```
-
-**Motion (Framer Motion):** every glass element that's tappable should animate press/release
-with a spring, not a linear transition:
-```tsx
-<motion.button
-  whileTap={{ scale: 0.96 }}
-  transition={{ type: "spring", stiffness: 500, damping: 30 }}
-  className="glass ..."
->
-  Order Now
-</motion.button>
-```
-This spring-back is what makes it read as "liquid" rather than flat/static. Apply it to: the
-primary CTA, variant selector pills, nav items, and the bottom-sheet's drag handle.
-
-**Backdrop-blur performance note:** `backdrop-filter` is GPU-intensive on long scrolling lists.
-Use it on fixed/sticky/floating elements (nav bar, CTAs, sheets, cards with a handful on
-screen) — for a catalog grid of 30+ product cards, use a flat semi-transparent background
-instead of full backdrop-blur per card, or blur only the visible viewport's cards.
-
-## Component library approach
-Use **shadcn/ui** (Radix primitives + Tailwind) as the accessible, headless foundation —
-it gives you real keyboard navigation, focus states, and ARIA behavior for free. Then override
-every component's default styling with the `.glass` treatment above. This is the "any
-component library is fine as long as it's consistent" answer: shadcn because it doesn't ship
-opinionated visuals to fight against, but the actual look comes entirely from your own glass
-utility classes layered on top.
-
-Build a small internal set on top of it:
-- `<GlassButton />` — primary CTA style
-- `<GlassCard />` — product cards, info panels
-- `<GlassSheet />` — the order form bottom sheet
-- `<GlassPill />` — variant selector, filter chips
-
-Every other component in the app should compose from these four, not invent new surface
-treatments — this is what keeps the UI "consistent" across the whole site.
-
-## Typography
-- **Headings:** SF Pro–adjacent — use `Inter` (very close metrics, free, works well at glass-UI
-  scale) or `Geist` (Vercel's font, also a strong fit and pairs naturally with a Next.js/Vercel
-  stack). Avoid serif here — liquid glass is a distinctly modern, not boutique-vintage, look.
-- **Body/UI text:** same family as headings, different weights — one consistent type family
-  keeps the monochrome system feeling deliberate rather than empty.
-- Tight, confident tracking on labels ("MEN" / "WOMEN" / "UNISEX" / "DECANT" / "FULL BOTTLE")
-  — small caps, letter-spacing 0.05em.
-
-## Layout principles — 100% responsive by default
-- **Mobile-first**, always design/build the 375–430px layout first, then scale up with
-  Tailwind breakpoints (`sm`, `md`, `lg`, `xl`).
-- Use fluid type/spacing (`clamp()`) for hero headings and section padding instead of fixed
-  per-breakpoint values, so it doesn't visibly "jump" between breakpoints.
-- Product grid: 2 columns on mobile, 3 on tablet (`md`), 4 on desktop (`xl`). Consistent gap
-  (`gap-4` mobile → `gap-6` desktop).
-- Product photo aspect ratio: fixed (e.g. 4:5) across every card via `aspect-[4/5]` +
-  `object-cover`, so the grid stays uniform regardless of source photo dimensions.
-- The order form is a **bottom sheet on mobile** (slides up, draggable via Framer Motion's
-  `drag="y"`), and a **centered modal on desktop** (`md:` breakpoint swaps the presentation,
-  not the component logic).
-- Test every screen at minimum: 375px (small phone), 768px (tablet), 1440px (desktop). Don't
-  rely on browser dev-tool presets alone — check on an actual phone before launch.
+## Layout principles — still 100% responsive
+- **Mobile-first**, same as before — most traffic is Instagram → mobile.
+- The split-screen hero (image on one half, product/content on the other) collapses to a
+  stacked layout on mobile: full-width image on top, content below, in that order.
+- Product grid: 2 columns on mobile, 4 on desktop (`md:grid-cols-3 xl:grid-cols-4`), generous
+  gaps (`gap-8` md, `gap-12` desktop) — the reference grid (image 3) has noticeably more
+  breathing room between items than a typical e-commerce grid.
+- Collage/torn-paper decorative sections (newsletter, brand story) are the one place layout can
+  get asymmetric/rotated (`rotate-2`, `-rotate-1` on stacked photo elements) — keep every
+  functional page (catalog, product detail, order form) calm and grid-aligned by contrast.
+- Test at 375px, 768px, 1440px minimum, same as before.
 
 ## Key components
 
+**Nav Bar**
+- Three-column layout: left — small-caps text links (`CATALOG / ABOUT US / BLOG`); center —
+  monogram wordmark (interlocked initials, e.g. a simple serif "CN" lockup); right — utility
+  links (`CART / ACCOUNT / SEARCH`). No background fill, sits directly on the page.
+
+**Hero (Split Screen)**
+- Full-bleed photographic half + a light/cream half carrying a small supporting image, the
+  product/collection name in large `--font-display` serif, and minimal supporting text.
+  Matches image 1 exactly — this is the homepage/collection template.
+
 **Product Card**
-- Photo, brand (small, muted), name (heading font), price range (e.g. "৳450 – ৳8,500"),
-  gender tag as a small glass pill in the corner, "Sold Out" glass overlay if no preset
-  variant has stock (custom amounts still orderable unless the product itself is inactive).
+- Photo on white/cream background (no card border), name in small-caps `--font-sans`, price
+  below in `--font-mono` for that editorial-label feel, optional star rating row (only once you
+  have real reviews — ship without it initially rather than faking ratings).
+- No hover-scale/glow — a simple, slow opacity dim (0.85) on hover is enough.
 
 **Note Pyramid** (`notes-pyramid.tsx`)
-- Three stacked rows — Top / Middle / Base — each a horizontal list of small glass pills.
-  This is a recognizable, expected pattern in fragrance retail; don't reinvent it, just glass-ify it.
+- No pills. Three stacked rows, each a small-caps label (`TOP`, `MIDDLE`, `BASE`) followed by a
+  comma-separated list in regular body text, divided by thin hairline rules — reads like a tasting
+  note in a print catalog, not a tag cloud.
 
 **Variant Selector**
-- Preset pills in a row: 5ml / 10ml / 15ml / Full Bottle — glass pills, `.glass` styling,
-  disabled + reduced opacity + "Sold Out" label when `stockQty === 0`.
-- A distinct "Custom Amount" pill that, when tapped, expands (spring animation) into a number
-  input + live-updating price, using `pricePerMl` from `lib/pricing.ts`.
+- Small rectangular buttons (2px radius per the token above), 1px `--border` outline,
+  transparent background. Selected state: solid `--ink` fill, white text — this is the *only*
+  place solid black fill is used outside the primary CTA, so selection state stays unambiguous.
+  Sold-out presets: outline only, muted text, strikethrough price, disabled.
+- "Custom Amount" behaves the same as before functionally (reveals an ml input, live price via
+  `pricePerMl`) — just restyled: underline-style input (see Order Form below), no expand/spring
+  animation, a simple height transition is enough.
 
-**Order Form (Glass Sheet)**
-- One screen, 5 fields max, running total shown near the glass "Confirm Order" CTA.
-- Bottom-sheet on mobile, modal on desktop — see layout principles above.
+**Order Form**
+- Underline-style inputs, matching the postcard reference exactly: label to the left (or above
+  on mobile), a thin bottom border under the input, no visible box/fill. This is a deliberate,
+  distinctive choice — don't default back to filled/bordered input boxes.
+- Primary submit button: solid `--ink` fill rectangle, uppercase white `--font-sans` label,
+  sharp corners (`--radius` token) — matches the postcard's "SEND" button exactly.
+- Still a bottom sheet on mobile / centered panel on desktop for the interaction pattern, just
+  styled flat (background-warm fill, hairline top border) instead of glass/blurred.
 
-**Confirmation Page**
-- A glass card with the order number, and warm, human-toned copy reinforcing that a real
-  person is about to reach out. This is a trust touchpoint — matches the understated,
-  confident tone of your IG bio, not generic e-commerce "Thank you for your purchase!" copy.
+**"MORE" / Secondary Button**
+- Outlined only: 1px `--border`, transparent fill, uppercase label, generous horizontal padding.
+  Used for secondary actions (read more, view details) — reserve the solid black fill for the
+  one primary action per screen (Order Now / Send).
+
+**Newsletter / Storytelling Sections**
+- These are where the collage treatment lives: `--surface-paper` background, a card-like
+  postcard panel with a vertical hairline divider between two content halves, a slightly rotated
+  stack of photos with white "print" borders (like a photo physically laid on top of paper).
+  This visual richness is intentionally concentrated in 1–2 sections (About page, newsletter
+  signup) rather than spread across the whole site.
+
+**Footer**
+- Plain multi-column link lists (Customer Service / Company Info / Additionally), small
+  monogram mark bottom-left, copyright line bottom-right, all in the small-caps `--font-sans`
+  style. No decoration.
+
+## Motion — restrained, not absent
+Framer Motion is still used, but for quiet effects, not bouncy feedback:
+- Scroll-triggered fade-up on section entry (`opacity 0 → 1`, `y: 12 → 0`, ease-out, ~500ms).
+- A slow, subtle parallax on hero photography (image moves slower than scroll — a few percent
+  offset, not a dramatic effect).
+- Hover states: opacity/underline transitions only (`transition-opacity duration-300`), no
+  `scale()` press animations, no spring physics. This is the single biggest behavioral
+  difference from the retired glass system.
 
 ## Accessibility notes
-- Glass surfaces rely on blur + subtle contrast — always pair with a `--glass-border` outline
-  so elements remain legible/distinguishable even where `backdrop-filter` isn't supported
-  (older browsers fall back to the solid `--glass-fill` color, which must still pass contrast
-  on its own).
-- Body text sits on solid `--background`/`--surface`, not directly on blurred glass, to
-  guarantee contrast regardless of what's behind the blur.
-- Keep shadcn/ui's native `<button>`, `<input>`, and `<label>` semantics — don't replace them
-  with styled `<div>`s, or you lose keyboard/screen-reader support the glass restyle depends on.
+- `--muted` (`#6E6B64`) on `--background-warm` (`#F6F4EF`) is borderline for small text — reserve
+  it for captions/labels at a reasonably sized weight, use `--foreground` for anything body-length.
+- Underline-style form inputs still need a visible focus state (e.g. thicken the underline to
+  2px and switch it to `--ink` on `:focus`) since removing the box border removes an affordance
+  sighted keyboard users otherwise rely on.
+- Keep shadcn/Base UI's native semantics (`<button>`, `<input>`, `<label>`) — the visual restyle
+  changes nothing about the underlying accessible markup.

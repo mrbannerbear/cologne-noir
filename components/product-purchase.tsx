@@ -5,9 +5,9 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatBdt } from "@/lib/format";
 import type { ProductWithVariants } from "@/types";
-import { GlassButton } from "@/components/ui/glass-button";
 import { GlassSheet } from "@/components/ui/glass-sheet";
 import { VariantSelector, type VariantSelection } from "@/components/variant-selector";
+import { cn } from "@/lib/utils";
 
 type ProductPurchaseProps = {
   product: ProductWithVariants;
@@ -25,11 +25,14 @@ function initialSelection(product: ProductWithVariants): VariantSelection {
     };
   }
 
+  const fullBottleVariant = product.variants.find((v) => v.size === "FULL_BOTTLE");
+  const fullBottlePrice = fullBottleVariant?.priceBdt ?? 0;
+
   return {
     mode: "custom",
     customMl: 20,
     label: "20ml Custom Decant",
-    unitPrice: Math.round((product.actualBottleFullPriceBdt / product.actualBottleMl) * 20),
+    unitPrice: Math.round((fullBottlePrice / product.actualBottleMl) * 20),
   };
 }
 
@@ -103,107 +106,142 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
 
   return (
     <>
-      <section className="glass rounded-[1.5rem] p-5 sm:p-6">
-        <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+      <div className="space-y-6">
+        
+        {/* Live pricing display */}
+        <div className="flex items-center justify-between gap-4 border-b border-border pb-4">
           <div>
-            <p className="label-caps text-muted">Choose size</p>
-            <p className="mt-2 text-3xl font-semibold tracking-tight text-foreground">{formatBdt(total)}</p>
+            <p className="label-caps text-[10px] text-muted">Running Total</p>
+            <p className="mt-1 font-display text-3xl font-light text-foreground">{formatBdt(total)}</p>
           </div>
-          <span className="label-caps text-muted">{selection.label}</span>
+          <span className="label-caps text-[10px] text-muted font-mono">{selection.label}</span>
         </div>
 
-        <div className="mt-4">
+        {/* Variant selector */}
+        <div>
           <VariantSelector product={product} selection={selection} onChange={setSelection} />
         </div>
 
-        <div className="mt-5 flex items-center justify-between gap-4 rounded-[1.25rem] border border-white/10 bg-white/5 px-4 py-4">
-          <div>
-            <p className="label-caps text-muted">Quantity</p>
-            <input
-              type="number"
-              min="1"
-              value={quantity}
-              onChange={(event) => setQuantity(event.target.value)}
-              className="mt-2 w-20 rounded-[0.875rem] border border-white/12 bg-black/40 px-3 py-2 text-foreground outline-none"
-            />
+        {/* Quantity and Checkout Trigger */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end justify-between border-t border-border/80 pt-6">
+          <div className="space-y-2 flex-1">
+            <span className="label-caps text-[10px] text-muted">Quantity</span>
+            <div className="relative">
+              <input
+                type="number"
+                min="1"
+                value={quantity}
+                onChange={(event) => setQuantity(event.target.value)}
+                className="w-full bg-transparent border-b border-border focus:border-ink pb-2 text-sm text-foreground outline-none focus:border-b-2 transition-all duration-200"
+              />
+            </div>
           </div>
-          <GlassButton
+          
+          <button
             type="button"
             disabled={!canOpenSheet}
             onClick={() => setSheetOpen(true)}
-            className="min-w-[9rem]"
+            className={cn(
+              "inline-flex items-center justify-center border border-ink bg-ink text-white px-6 py-3 text-xs label-caps hover:bg-white hover:text-ink transition-colors duration-300 font-medium rounded-[2px] min-w-[10rem] h-[40px]",
+              !canOpenSheet && "opacity-55 cursor-not-allowed"
+            )}
           >
-            Order now
-          </GlassButton>
+            Order Now
+          </button>
         </div>
-      </section>
+        
+      </div>
 
       <GlassSheet
         open={sheetOpen}
         onClose={() => setSheetOpen(false)}
         title={`${product.brand} ${product.name}`}
       >
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="rounded-[1.25rem] border border-white/10 bg-white/5 p-4 text-sm text-muted">
-            <p>{selection.label} × {qty}</p>
-            <p className="mt-1 text-lg font-medium text-foreground">{formatBdt(total)}</p>
-            <p className="mt-2 text-xs">COD — we&apos;ll confirm by WhatsApp before shipping.</p>
+        <form onSubmit={onSubmit} className="space-y-6">
+          
+          {/* Order Snapshot Receipt */}
+          <div className="border border-border bg-background p-4 text-xs font-mono space-y-2">
+            <p className="text-foreground font-semibold">{selection.label} × {qty}</p>
+            <p className="text-sm font-semibold text-foreground">{formatBdt(total)}</p>
+            <p className="text-[10px] text-muted pt-1 border-t border-border/60">
+              COD — we will confirm by WhatsApp before shipping.
+            </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <label className="block sm:col-span-2">
-              <span className="label-caps text-muted">Full name</span>
+          {/* Underline Style Input Form Grid */}
+          <div className="space-y-4">
+            
+            <label className="block space-y-1">
+              <span className="label-caps text-[10px] text-muted">Full name</span>
               <input
                 value={customerName}
                 onChange={(event) => setCustomerName(event.target.value)}
-                className="mt-2 w-full rounded-[1rem] border border-white/12 bg-black/40 px-4 py-3 text-foreground outline-none"
+                className="w-full bg-transparent border-b border-border focus:border-ink pb-2 text-sm text-foreground outline-none focus:border-b-2 transition-all duration-200"
                 placeholder="Sayed Rahman"
               />
             </label>
-            <label className="block">
-              <span className="label-caps text-muted">Phone</span>
-              <input
-                value={phone}
-                onChange={(event) => setPhone(event.target.value)}
-                className="mt-2 w-full rounded-[1rem] border border-white/12 bg-black/40 px-4 py-3 text-foreground outline-none"
-                placeholder="017XXXXXXXX"
-              />
-            </label>
-            <label className="block">
-              <span className="label-caps text-muted">City</span>
-              <input
-                value={city}
-                onChange={(event) => setCity(event.target.value)}
-                className="mt-2 w-full rounded-[1rem] border border-white/12 bg-black/40 px-4 py-3 text-foreground outline-none"
-                placeholder="Chittagong"
-              />
-            </label>
-            <label className="block sm:col-span-2">
-              <span className="label-caps text-muted">Address</span>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="block space-y-1">
+                <span className="label-caps text-[10px] text-muted">Phone</span>
+                <input
+                  value={phone}
+                  onChange={(event) => setPhone(event.target.value)}
+                  className="w-full bg-transparent border-b border-border focus:border-ink pb-2 text-sm text-foreground outline-none focus:border-b-2 transition-all duration-200"
+                  placeholder="017XXXXXXXX"
+                />
+              </label>
+              
+              <label className="block space-y-1">
+                <span className="label-caps text-[10px] text-muted">City</span>
+                <input
+                  value={city}
+                  onChange={(event) => setCity(event.target.value)}
+                  className="w-full bg-transparent border-b border-border focus:border-ink pb-2 text-sm text-foreground outline-none focus:border-b-2 transition-all duration-200"
+                  placeholder="Chittagong"
+                />
+              </label>
+            </div>
+
+            <label className="block space-y-1">
+              <span className="label-caps text-[10px] text-muted">Delivery Address</span>
               <textarea
                 value={address}
                 onChange={(event) => setAddress(event.target.value)}
-                rows={3}
-                className="mt-2 w-full rounded-[1rem] border border-white/12 bg-black/40 px-4 py-3 text-foreground outline-none"
+                rows={2}
+                className="w-full bg-transparent border-b border-border focus:border-ink pb-2 text-sm text-foreground outline-none focus:border-b-2 transition-all duration-200 resize-none"
                 placeholder="House 12, Road 4, Nasirabad"
               />
             </label>
-            <label className="block sm:col-span-2">
-              <span className="label-caps text-muted">Note (optional)</span>
+
+            <label className="block space-y-1">
+              <span className="label-caps text-[10px] text-muted">Special Notes (optional)</span>
               <input
                 value={notes}
                 onChange={(event) => setNotes(event.target.value)}
-                className="mt-2 w-full rounded-[1rem] border border-white/12 bg-black/40 px-4 py-3 text-foreground outline-none"
+                className="w-full bg-transparent border-b border-border focus:border-ink pb-2 text-sm text-foreground outline-none focus:border-b-2 transition-all duration-200"
                 placeholder="Call after 6pm"
               />
             </label>
+            
           </div>
 
-          <GlassButton type="submit" disabled={isSubmitting || !canSubmit} className="w-full">
-            {isSubmitting ? "Placing order..." : `Confirm order · ${formatBdt(total)}`}
-          </GlassButton>
+          {/* Solid Ink Submit Button */}
+          <button
+            type="submit"
+            disabled={isSubmitting || !canSubmit}
+            className={cn(
+              "w-full inline-flex items-center justify-center border border-ink bg-ink text-white px-5 py-3.5 text-xs label-caps hover:bg-white hover:text-ink transition-colors duration-300 font-semibold rounded-[2px]",
+              (isSubmitting || !canSubmit) && "opacity-55 cursor-not-allowed"
+            )}
+          >
+            {isSubmitting ? "Placing Order..." : `Confirm Order · ${formatBdt(total)}`}
+          </button>
 
-          {errorMessage ? <p className="text-sm text-muted">{errorMessage}</p> : null}
+          {errorMessage ? (
+            <p className="text-xs font-mono text-muted text-center pt-2">{errorMessage}</p>
+          ) : null}
+          
         </form>
       </GlassSheet>
     </>

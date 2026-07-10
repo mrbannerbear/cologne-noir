@@ -11,7 +11,6 @@ export type ProductWithVariants = {
   middleNotes: string[];
   baseNotes: string[];
   actualBottleMl: number;
-  actualBottleFullPriceBdt: number;
   images: string[];
   isActive: boolean;
   variants: ProductVariantView[];

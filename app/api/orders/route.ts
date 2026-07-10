@@ -79,7 +79,16 @@ export async function POST(request: Request) {
     } else {
       const ml = body.customMl ?? 0;
       label = `${ml}ml Custom Decant`;
-      unitPriceBdt = customDecantPrice(product, ml);
+      
+      const fullBottleVariant = await prisma.productVariant.findFirst({
+        where: { productId: product.id, size: "FULL_BOTTLE" },
+      });
+
+      if (!fullBottleVariant) {
+        return NextResponse.json({ success: false, message: "Full bottle pricing not found." }, { status: 404 });
+      }
+
+      unitPriceBdt = customDecantPrice(fullBottleVariant.priceBdt, product.actualBottleMl, ml);
       customMl = ml;
     }
 

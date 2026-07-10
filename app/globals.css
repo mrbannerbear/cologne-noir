@@ -4,40 +4,20 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@theme inline {
-  --color-background: var(--background);
-  --color-surface: var(--surface);
-  --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
-  --color-border: var(--border-subtle);
-  --color-ring: var(--ring);
-  --color-card: var(--surface);
-  --color-card-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-geist-sans);
-  --radius-lg: var(--radius-lg);
-  --radius-xl: var(--radius-xl);
-}
-
-:root {
-  --background: #000000;
-  --surface: #0d0d0d;
-  --foreground: #fafafa;
-  --muted: #8a8a8e;
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --ring: rgba(255, 255, 255, 0.22);
-  --radius-lg: 1.125rem;
-  --radius-xl: 1.5rem;
-  --glass-fill: rgba(255, 255, 255, 0.1);
-  --glass-fill-hover: rgba(255, 255, 255, 0.16);
-  --glass-fill-pressed: rgba(255, 255, 255, 0.22);
-  --glass-border: rgba(255, 255, 255, 0.18);
-  --glass-highlight: rgba(255, 255, 255, 0.35);
-  --glass-blur: 20px;
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --glass-fill-on-light: rgba(0, 0, 0, 0.08);
-  --glass-border-on-light: rgba(0, 0, 0, 0.12);
+@theme {
+  --color-background: #FFFFFF;
+  --color-background-warm: #F6F4EF;
+  --color-surface-paper: #EAE6DC;
+  --color-foreground: #181818;
+  --color-muted: #6E6B64;
+  --color-border: #D9D5C9;
+  --color-ink: #000000;
+  
+  --font-display: var(--font-display), serif;
+  --font-sans: var(--font-sans), sans-serif;
+  --font-mono: var(--font-mono), monospace;
+  
+  --radius: 0.125rem; /* 2px sharp corners for Maia shadcn components */
 }
 
 @layer base {
@@ -45,46 +25,72 @@
     @apply bg-background text-foreground;
     font-synthesis-weight: none;
     text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
   }
+  
   body {
     @apply min-h-screen bg-background text-foreground antialiased;
-    background:
-      radial-gradient(circle at top, rgba(255, 255, 255, 0.04), transparent 28%),
-      radial-gradient(circle at 80% 0%, rgba(255, 255, 255, 0.02), transparent 22%),
-      linear-gradient(180deg, #000000 0%, #050505 54%, #0a0a0a 100%);
+    font-family: var(--font-sans);
   }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 400; /* Editorial Didone serifs should be light/regular, not bold */
+  }
+
   * {
-    border-color: var(--border-subtle);
+    @apply border-border;
   }
+
   ::selection {
-    background: rgba(255, 255, 255, 0.16);
-    color: var(--foreground);
-  }
-  :where(a, button, input, textarea, select, summary) {
-    outline-color: var(--ring);
+    background: var(--color-surface-paper);
+    color: var(--color-foreground);
   }
 }
 
-@utility glass {
-  background: var(--glass-fill);
-  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
-  border: 1px solid var(--glass-border);
-  box-shadow:
-    var(--glass-shadow),
-    inset 0 1px 0 var(--glass-highlight);
+@utility grain-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 90;
+  opacity: 0.045; /* Hazy texture film-grain */
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
 }
 
-@utility glass-hover {
-  background: var(--glass-fill-hover);
-}
-
-@utility glass-press {
-  background: var(--glass-fill-pressed);
+@utility hairline {
+  border-color: var(--color-border);
+  border-width: 1px;
 }
 
 @utility label-caps {
+  font-family: var(--font-sans);
   font-size: 0.6875rem;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
+}
+
+/* Custom text and layout components for French perfumery editorial styling */
+@utility editorial-link {
+  position: relative;
+  transition: opacity 0.3s ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 1px;
+    bottom: -2px;
+    left: 0;
+    background-color: currentColor;
+    transform-origin: bottom right;
+    transition: transform 0.25s ease-out;
+  }
+
+  &:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  }
 }

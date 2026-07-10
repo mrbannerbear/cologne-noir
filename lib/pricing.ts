@@ -1,10 +1,11 @@
-export function pricePerMl(product: { actualBottleFullPriceBdt: number; actualBottleMl: number }) {
-  return product.actualBottleFullPriceBdt / product.actualBottleMl;
+export function pricePerMl(fullBottlePrice: number, actualBottleMl: number) {
+  return fullBottlePrice / actualBottleMl;
 }
 
 export function customDecantPrice(
-  product: { actualBottleFullPriceBdt: number; actualBottleMl: number },
+  fullBottlePrice: number,
+  actualBottleMl: number,
   ml: number,
 ) {
-  return Math.round(pricePerMl(product) * ml);
+  return Math.round(pricePerMl(fullBottlePrice, actualBottleMl) * ml);
 }

@@ -26,82 +26,114 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const coverImage = product.images[0];
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
-      <Link href="/products" className="inline-flex items-center gap-2 text-sm text-muted hover:text-foreground">
-        <span aria-hidden="true">←</span>
-        Back to catalog
-      </Link>
+    <div className="mx-auto w-full max-w-360xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12 space-y-8">
+      
+      {/* Back button */}
+      <div>
+        <Link
+          href="/products"
+          className="inline-flex items-center gap-1.5 text-xs label-caps text-muted hover:text-foreground transition-colors editorial-link"
+        >
+          <span aria-hidden="true">←</span>
+          Back to catalog
+        </Link>
+      </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-8">
-        <section className="glass overflow-hidden rounded-[1.5rem] p-4 sm:p-5">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-[1.25rem] border border-white/10 bg-[linear-gradient(160deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))]">
-            {coverImage ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={coverImage} alt={`${product.brand} ${product.name}`} className="h-full w-full object-cover" />
-            ) : (
-              <div className="flex h-full flex-col justify-between p-5">
-                <div className="flex items-start justify-between gap-3">
-                  <span className="glass rounded-full px-3 py-1 label-caps text-foreground">
-                    {genderLabel(product.gender)}
-                  </span>
-                  <span className="rounded-full border border-white/10 px-3 py-1 label-caps text-muted">
-                    {product.actualBottleMl}ml bottle
-                  </span>
-                </div>
-                <div>
-                  <p className="label-caps text-muted">{product.brand}</p>
-                  <h1 className="mt-2 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
-                    {product.name}
-                  </h1>
-                </div>
+      {/* Split-Screen Product Frame */}
+      <section className="grid overflow-hidden border border-border lg:grid-cols-2">
+        
+        {/* Left Half: Photographic Visual */}
+        <div className="relative aspect-[4/5] bg-background-warm border-b border-border lg:border-b-0 lg:border-r">
+          {coverImage ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={coverImage}
+              alt={`${product.brand} ${product.name}`}
+              className="h-full w-full object-cover grayscale contrast-[105%]"
+            />
+          ) : (
+            <div className="flex h-full flex-col justify-between p-8 bg-background-warm">
+              <div className="flex items-start justify-between gap-3">
+                <span className="border border-border bg-background px-3 py-1 text-[10px] label-caps text-muted">
+                  {genderLabel(product.gender)}
+                </span>
+                <span className="text-[10px] font-mono text-muted">
+                  {product.actualBottleMl}ml bottle
+                </span>
               </div>
-            )}
-          </div>
+              <div className="space-y-2">
+                <p className="label-caps text-xs text-muted">{product.brand}</p>
+                <h1 className="font-display text-4xl sm:text-5xl font-light leading-none text-foreground">
+                  {product.name}
+                </h1>
+              </div>
+              <span className="label-caps text-[9px] text-muted font-mono">Cologne Noir</span>
+            </div>
+          )}
+        </div>
 
-          <div className="mt-5 space-y-4">
+        {/* Right Half: Details & Form Intake */}
+        <div className="flex flex-col justify-between bg-background-warm p-6 sm:p-10 lg:p-12 gap-8">
+          
+          {/* Header Info */}
+          <div className="space-y-4">
+            <div className="flex justify-between items-baseline gap-2 border-b border-border/80 pb-4">
+              <div>
+                <p className="label-caps text-[10px] text-muted">{product.brand}</p>
+                <h1 className="font-display text-3xl font-light text-foreground mt-1">{product.name}</h1>
+              </div>
+              <span className="text-xs font-mono text-muted">
+                {product.actualBottleMl}ml full bottle
+              </span>
+            </div>
+            
             {product.description ? (
-              <p className="text-base leading-8 text-muted">{product.description}</p>
+              <p className="text-xs leading-relaxed text-muted font-sans pt-2">{product.description}</p>
             ) : null}
+
+            {/* Note Pyramid (divider rules) */}
             <NotesPyramid
               topNotes={product.topNotes}
               middleNotes={product.middleNotes}
               baseNotes={product.baseNotes}
             />
           </div>
-        </section>
 
-        <aside className="space-y-4">
-          <section className="glass rounded-[1.5rem] p-5 sm:p-6">
-            <p className="label-caps text-muted">{product.brand}</p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">{product.name}</h1>
-            <p className="mt-3 text-sm text-muted">
-              From {formatBdt(product.priceFloor)}
-              {product.priceCeiling > product.priceFloor ? ` to ${formatBdt(product.priceCeiling)}` : ""}
-            </p>
-          </section>
+          {/* Interactive Variant Selection and Form */}
+          <div className="pt-4">
+            <ProductPurchase product={product} />
+          </div>
 
-          <ProductPurchase product={product} />
-        </aside>
-      </div>
+        </div>
+      </section>
 
+      {/* More to explore Section */}
       {related.length ? (
-        <section className="mt-8 glass rounded-[1.5rem] p-5 sm:p-6">
-          <p className="label-caps text-muted">More to explore</p>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <section className="border border-border bg-background p-6 sm:p-10 space-y-6">
+          <div>
+            <p className="label-caps text-xs text-muted">Curated options</p>
+            <h2 className="font-display text-2xl font-light text-foreground mt-1">Related Fragrances</h2>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((item) => (
               <Link
                 key={item.id}
                 href={`/products/${item.slug}`}
-                className="rounded-[1.25rem] border border-white/10 bg-white/5 p-4 transition hover:border-white/18 hover:bg-white/8"
+                className="border border-border/85 bg-background-warm p-6 hover:border-foreground transition-all duration-300 space-y-3"
               >
-                <p className="label-caps text-muted">{item.brand}</p>
-                <p className="mt-2 text-lg font-medium text-foreground">{item.name}</p>
-                <p className="mt-1 text-sm text-muted">From {formatBdt(item.priceFloor)}</p>
+                <div className="space-y-1">
+                  <p className="label-caps text-[9px] text-muted">{item.brand}</p>
+                  <h3 className="font-display text-lg font-light text-foreground">{item.name}</h3>
+                </div>
+                <p className="font-mono text-xs text-muted">
+                  From {formatBdt(item.priceFloor)}
+                </p>
               </Link>
             ))}
           </div>
         </section>
       ) : null}
+
     </div>
   );
 }

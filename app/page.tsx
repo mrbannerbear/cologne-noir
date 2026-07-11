@@ -1,65 +1,130 @@
-import Image from "next/image";
+import Link from "next/link";
+import { ProductGrid } from "@/components/product-grid";
+import { ShopAllLink } from "@/components/catalog-filters";
+import { formatBdt } from "@/lib/format";
+import { getCollectionStats, getFeaturedProducts } from "@/lib/products";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const [featuredProducts, stats] = await Promise.all([
+    getFeaturedProducts(4),
+    getCollectionStats(),
+  ]);
+  const heroProduct = featuredProducts[0];
+  const coverImage = heroProduct?.images[0];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <div className="mx-auto flex w-full max-w-360 flex-col gap-16 px-4 py-8 sm:px-6 lg:px-8 lg:py-16">
+      
+      {/* Editorial Hero: Split-Screen Layout */}
+      <section className="grid overflow-hidden border border-border lg:grid-cols-2 min-h-[500px]">
+        
+        {/* Left Side: Photographic or Design Visual */}
+        <div className="relative aspect-square lg:aspect-auto bg-surface-paper border-b border-border lg:border-b-0 lg:border-r">
+          {coverImage ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={coverImage}
+              alt={`${heroProduct.brand} ${heroProduct.name}`}
+              className="absolute inset-0 h-full w-full object-cover grayscale contrast-[105%]"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          ) : (
+            <div className="absolute inset-0 flex flex-col justify-between p-8 bg-background-warm">
+              <span className="label-caps text-xs text-muted">Fragrances</span>
+              <div className="space-y-4">
+                <p className="font-display text-7xl italic leading-none tracking-tight select-none">
+                  Cologne
+                </p>
+                <p className="font-display text-7xl font-light leading-none tracking-wider select-none text-muted pl-12">
+                  Noir
+                </p>
+              </div>
+              <span className="label-caps text-[0.65rem] text-muted">Est. 2024</span>
+            </div>
+          )}
+          {heroProduct && coverImage ? (
+            <div className="absolute bottom-6 left-6 right-6 bg-background/90 p-4 border border-border">
+              <span className="label-caps text-[10px] text-muted">Featured Bottle</span>
+              <h3 className="font-display text-xl mt-1 text-foreground">
+                {heroProduct.brand}
+              </h3>
+              <p className="font-display text-sm italic text-muted mt-0.5">
+                {heroProduct.name}
+              </p>
+            </div>
+          ) : null}
         </div>
-      </main>
+
+        {/* Right Side: Editorial Information */}
+        <div className="flex flex-col justify-between bg-background-warm p-6 sm:p-10 lg:p-14 gap-8">
+          <div className="space-y-6">
+            <div className="inline-flex items-center gap-2 border border-border px-3 py-1 text-[10px] label-caps text-muted bg-background">
+              <span className="h-1.5 w-1.5 rounded-full bg-foreground/60" />
+              Chittagong · COD · verified
+            </div>
+            
+            <div className="space-y-4">
+              <h1 className="font-display text-[clamp(2.25rem,5vw,3.5rem)] font-light leading-[1.08] tracking-[-0.02em] text-foreground">
+                Perfume decants, presented with a <span className="italic">quieter</span> kind of luxury.
+              </h1>
+              <p className="max-w-md text-xs leading-relaxed text-muted font-sans">
+                Browse our curated catalog of authentic fragrances. Order preset vial sizes or specify a custom millilitre amount priced directly from the full bottle. We verify every request by phone or WhatsApp before dispatching.
+              </p>
+            </div>
+          </div>
+
+          {/* Stats Grid with hairline rules */}
+          <div className="grid grid-cols-2 border border-border bg-background">
+            {[
+              { label: "Active catalog", value: `${stats.activeProducts} scents` },
+              { label: "Preset sizes", value: "5 / 10 / 15ml" },
+              { label: "Custom milliletre", value: "Available" },
+              { label: "Fulfillment", value: "Manual COD" },
+            ].map((item, idx) => (
+              <div
+                key={item.label}
+                className={`p-4 text-left border-border ${idx < 2 ? "border-b" : ""} ${idx % 2 === 0 ? "border-r" : ""}`}
+              >
+                <p className="label-caps text-[9px] text-muted">{item.label}</p>
+                <p className="mt-1 text-sm font-medium font-display text-foreground">{item.value}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <ShopAllLink />
+            <Link
+              href="/about"
+              className="inline-flex items-center justify-center border border-border px-6 py-3 text-xs label-caps text-muted hover:border-foreground hover:text-foreground transition-all duration-300"
+            >
+              Shipping & Authenticity
+            </Link>
+          </div>
+        </div>
+
+      </section>
+
+      {/* Featured Grid Section */}
+      <section className="space-y-6 pt-4">
+        <div className="flex items-end justify-between border-b border-border pb-4">
+          <div>
+            <p className="label-caps text-xs text-muted">A Curated Edit</p>
+            <h2 className="mt-1 font-display text-3xl font-light text-foreground">
+              Featured Fragrances
+            </h2>
+          </div>
+          <Link
+            href="/products"
+            className="label-caps text-xs text-muted hover:text-foreground transition-colors editorial-link"
+          >
+            Catalog →
+          </Link>
+        </div>
+        <ProductGrid products={featuredProducts} />
+      </section>
+
     </div>
   );
 }

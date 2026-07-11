@@ -3,15 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "dev": "bun --bun next dev",
+    "build": "bun --bun next build",
+    "start": "bun --bun next start",
+    "lint": "eslint",
+    "db:migrate": "bunx dotenv -e .env.local -- bunx prisma migrate dev",
+    "db:seed": "bunx dotenv -e .env.local -- bunx prisma db seed",
+    "db:studio": "bunx dotenv -e .env.local -- bunx prisma studio"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
     "@hugeicons/core-free-icons": "^4.2.2",
     "@hugeicons/react": "^1.1.9",
+    "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@vercel/blob": "^2.6.0",
     "class-variance-authority": "^0.7.1",
@@ -45,5 +49,8 @@
   "trustedDependencies": [
     "sharp",
     "unrs-resolver"
-  ]
+  ],
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
 }

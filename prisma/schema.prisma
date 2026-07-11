@@ -1,13 +1,100 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../lib/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+enum Gender {
+  MEN
+  WOMEN
+  UNISEX
+}
+
+enum VariantSize {
+  DECANT_5ML
+  DECANT_10ML
+  DECANT_100ML
+  FULL_BOTTLE
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model Product {
+  id                       String          @id @default(cuid())
+  slug                     String          @unique
+  brand                    String
+  name                     String
+  concentration            String?
+  gender                   Gender
+  description              String?         @db.Text
+  topNotes                 String[]
+  middleNotes              String[]
+  baseNotes                String[]
+  actualBottleMl           Int
+  images                   String[]
+  isActive                 Boolean         @default(true)
+  createdAt                DateTime        @default(now())
+  updatedAt                DateTime        @updatedAt
+  variants                 ProductVariant[]
+  orderItems               OrderItem[]
+
+  @@index([isActive])
+  @@index([gender])
+}
+
+model ProductVariant {
+  id         String       @id @default(cuid())
+  productId  String
+  product    Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  size       VariantSize
+  priceBdt   Int
+  stockQty   Int          @default(0)
+  sku        String?      @unique
+  orderItems OrderItem[]
+
+  @@index([productId])
+  @@unique([productId, size])
+}
+
+model Order {
+  id           String       @id @default(cuid())
+  orderNumber  String       @unique
+  customerName String
+  phone        String
+  address      String       @db.Text
+  city         String
+  notes        String?      @db.Text
+  status       OrderStatus  @default(PENDING)
+  totalBdt     Int
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  items        OrderItem[]
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id                   String          @id @default(cuid())
+  orderId              String
+  order                Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId            String
+  product              Product         @relation(fields: [productId], references: [id])
+  productVariantId     String?
+  productVariant       ProductVariant? @relation(fields: [productVariantId], references: [id], onDelete: SetNull)
+  customMl             Int?
+  label                String
+  quantity             Int
+  unitPriceBdtAtOrder  Int
+  totalPriceBdtAtOrder Int
+
+  @@index([orderId])
 }

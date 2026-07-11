@@ -16,8 +16,9 @@ gap).
 5. You manage inventory via Prisma Studio (a free GUI for the database) — no custom admin UI yet.
 6. Deployed on Vercel, fast, fully responsive across phone/tablet/desktop (most traffic comes
    from Instagram on phones).
-7. Visual language: Apple-style "liquid glass" — translucent, blurred, glossy surfaces on CTAs
-   and key UI elements, in a strict white/black/grey palette (no gold, no color accents).
+7. Visual language: editorial, French-perfumery-house aesthetic — white/off-white/grey/black
+   palette, high-contrast serif typography, hairline rules, hazy film-grain texture, collage
+   moments in storytelling sections. Calm and print-inspired, not app-like.
 
 ## Explicit non-goals for Phase 1
 - No online payment (bKash/Nagad/card) — COD only, confirmed manually.
@@ -35,7 +36,7 @@ you already do well.
 ## Tech stack (locked in)
 - **Runtime/package manager:** Bun (not Node/npm)
 - **Framework:** Next.js 16+ (App Router), TypeScript
-- **Styling:** Tailwind CSS + custom "liquid glass" utility layer
+- **Styling:** Tailwind CSS + editorial design tokens (see `04-ui-ux-design-system.md`)
 - **Component base:** shadcn/ui (Radix primitives) for accessibility, heavily restyled
 - **Motion:** Framer Motion (for the spring/glass micro-interactions)
 - **Database:** PostgreSQL via Neon (serverless Postgres, free tier, plays well with Vercel)

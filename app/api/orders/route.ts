@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { Prisma } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { ZodError } from "zod";
 import { formatBdt } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -95,7 +95,7 @@ export async function POST(request: Request) {
     const totalPriceBdtAtOrder = unitPriceBdt * body.quantity;
     const productName = `${product.brand} ${product.name}`;
 
-    const order = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const order = await prisma.$transaction(async (tx) => {
       const createdOrder = await tx.order.create({
         data: {
           orderNumber,

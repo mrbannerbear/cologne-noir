@@ -27,7 +27,7 @@ export default async function Home() {
             <img
               src={coverImage}
               alt={`${heroProduct.brand} ${heroProduct.name}`}
-              className="absolute inset-0 h-full w-full object-cover grayscale contrast-[105%]"
+              className="absolute inset-0 h-full w-full object-cover"
             />
           ) : (
             <div className="absolute inset-0 flex flex-col justify-between p-8 bg-background-warm">

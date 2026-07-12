@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { Gender } from "@prisma/client";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
 
 const filters: Array<{ value: "ALL" | Gender; label: string }> = [
   { value: "ALL", label: "All" },
@@ -11,6 +12,42 @@ const filters: Array<{ value: "ALL" | Gender; label: string }> = [
   { value: "WOMEN", label: "Women" },
   { value: "UNISEX", label: "Unisex" },
 ];
+
+export function SearchBar() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [query, setQuery] = useState(searchParams.get("q") || "");
+
+  useEffect(() => {
+    setQuery(searchParams.get("q") || "");
+  }, [searchParams]);
+
+  function handleSearch(value: string) {
+    setQuery(value);
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) {
+      params.set("q", value);
+    } else {
+      params.delete("q");
+    }
+    router.push(`/products?${params.toString()}`);
+  }
+
+  return (
+    <div className="relative w-full max-w-xs">
+      <input
+        type="text"
+        value={query}
+        onChange={(e) => handleSearch(e.target.value)}
+        placeholder="Search brand or perfume..."
+        className="w-full bg-transparent border border-border rounded-[2px] px-4 py-2 text-sm text-foreground outline-none focus:border-ink transition-all duration-300 placeholder:text-muted/50"
+      />
+      <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+        <span className="text-[10px] label-caps text-muted opacity-50">Search</span>
+      </div>
+    </div>
+  );
+}
 
 export function GenderFilterBar() {
   const router = useRouter();

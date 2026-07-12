@@ -48,7 +48,10 @@ export default function RootLayout({
         courierPrime.variable
       )}
     >
-      <body className="min-h-full flex flex-col relative bg-background text-foreground">
+      <body 
+        suppressHydrationWarning 
+        className="min-h-full flex flex-col relative bg-background text-foreground"
+      >
         {/* Grain overlay for desaturated film look */}
         <div className="grain-overlay" aria-hidden="true" />
         

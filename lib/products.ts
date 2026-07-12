@@ -21,6 +21,7 @@ function toProductView(product: Product & { variants: ProductVariant[] }): Produ
   }));
 
   const prices = variants.map((variant) => variant.priceBdt);
+  const blobBase = process.env.BLOB || "";
 
   return {
     id: product.id,
@@ -33,7 +34,7 @@ function toProductView(product: Product & { variants: ProductVariant[] }): Produ
     middleNotes: product.middleNotes,
     baseNotes: product.baseNotes,
     actualBottleMl: product.actualBottleMl,
-    images: product.images,
+    images: product.images.map((img) => img.startsWith("http") ? img : `${blobBase}${img}`),
     isActive: product.isActive,
     variants,
     priceFloor: prices.length ? Math.min(...prices) : 0,
@@ -42,11 +43,19 @@ function toProductView(product: Product & { variants: ProductVariant[] }): Produ
   };
 }
 
-export async function getActiveProducts(gender: GenderFilter = "ALL") {
+export async function getActiveProducts(gender: GenderFilter = "ALL", search?: string) {
   const products = await prisma.product.findMany({
     where: {
       isActive: true,
       ...(gender !== "ALL" ? { gender } : {}),
+      ...(search
+        ? {
+            OR: [
+              { name: { contains: search, mode: "insensitive" } },
+              { brand: { contains: search, mode: "insensitive" } },
+            ],
+          }
+        : {}),
     },
     include: { variants: { orderBy: { size: "asc" } } },
     orderBy: { createdAt: "desc" },

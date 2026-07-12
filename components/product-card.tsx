@@ -29,7 +29,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           <img
             src={coverImage}
             alt={`${product.brand} ${product.name}`}
-            className="h-full w-full object-cover grayscale contrast-[105%]"
+            className="h-full w-full object-cover"
           />
         ) : (
           <div className="flex h-full flex-col justify-between p-4 bg-background-warm">

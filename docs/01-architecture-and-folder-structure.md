@@ -66,7 +66,6 @@ cologne-noir/
 │
 ├── prisma/
 │   ├── schema.prisma
-│   └── seed.ts                   # seeds initial products from your IG catalog
 │
 ├── types/
 │   └── index.ts                  # shared TS types (Product, Variant, Order, etc.)

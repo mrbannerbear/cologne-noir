@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { GenderFilterBar } from "@/components/catalog-filters";
+import { GenderFilterBar, SearchBar } from "@/components/catalog-filters";
 import { ProductGrid } from "@/components/product-grid";
 import { getActiveProducts } from "@/lib/products";
 import type { GenderFilter } from "@/types";
@@ -7,10 +7,12 @@ import type { GenderFilter } from "@/types";
 export const dynamic = "force-dynamic";
 
 type ProductsPageProps = {
-  searchParams: Promise<{ gender?: string }>;
+  searchParams: Promise<{ gender?: string; q?: string }>;
 };
 
 function parseGender(value?: string): GenderFilter {
+// ... (keep existing parseGender)
+
   const normalized = value?.toUpperCase();
   if (normalized === "MEN" || normalized === "WOMEN" || normalized === "UNISEX") {
     return normalized;
@@ -19,9 +21,9 @@ function parseGender(value?: string): GenderFilter {
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  const { gender } = await searchParams;
+  const { gender, q } = await searchParams;
   const filter = parseGender(gender);
-  const products = await getActiveProducts(filter);
+  const products = await getActiveProducts(filter, q);
 
   return (
     <div className="mx-auto w-full max-w-360xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
@@ -36,9 +38,14 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             from the actual bottle size.
           </p>
         </div>
-        <Suspense fallback={<div className="h-10" />}>
-          <GenderFilterBar />
-        </Suspense>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+          <Suspense fallback={<div className="h-10 w-64" />}>
+            <SearchBar />
+          </Suspense>
+          <Suspense fallback={<div className="h-10" />}>
+            <GenderFilterBar />
+          </Suspense>
+        </div>
       </div>
 
       <div className="mt-8">

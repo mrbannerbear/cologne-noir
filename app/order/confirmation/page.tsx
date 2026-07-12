@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 
 type OrderConfirmationProps = {
   searchParams: Promise<{ orderNumber?: string }>;
@@ -6,6 +7,14 @@ type OrderConfirmationProps = {
 
 export default async function OrderConfirmationPage({ searchParams }: OrderConfirmationProps) {
   const { orderNumber } = await searchParams;
+  
+  let order = null;
+  if (orderNumber) {
+    order = await prisma.order.findUnique({
+      where: { orderNumber },
+      include: { items: true },
+    });
+  }
 
   return (
     <div className="mx-auto flex w-full max-w-2xl items-center px-4 py-12 sm:px-6 lg:px-8 lg:py-20">
@@ -22,35 +31,41 @@ export default async function OrderConfirmationPage({ searchParams }: OrderConfi
         </div>
 
         {/* Print Receipt Section */}
-        {orderNumber ? (
-          <div className="border border-border/80 bg-background p-6 font-mono text-xs text-left max-w-md mx-auto space-y-4">
-            <div className="flex justify-between border-b border-border/50 pb-2 label-caps text-[10px] text-muted">
-              <span>Receipt Details</span>
-              <span>Invoice</span>
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-muted">Order Reference:</span>
-                <span className="text-foreground font-semibold">{orderNumber}</span>
+        {order ? (
+          <div className="space-y-6">
+            <div className="border border-border/80 bg-background p-6 font-mono text-xs text-left max-w-md mx-auto space-y-4">
+              <div className="flex justify-between border-b border-border/50 pb-2 label-caps text-[10px] text-muted">
+                <span>Receipt Details</span>
+                <span>Invoice</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted">Fulfillment:</span>
-                <span className="text-foreground">Manual verification</span>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-muted">Order Reference:</span>
+                  <span className="text-foreground font-semibold">{order.orderNumber}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted">Fulfillment:</span>
+                  <span className="text-foreground">Manual verification</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted">Status:</span>
+                  <span className="text-foreground font-semibold">Pending confirmation</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted">Payment Method:</span>
+                  <span className="text-foreground">Cash on Delivery (COD)</span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted">Status:</span>
-                <span className="text-foreground font-semibold">Pending confirmation</span>
+              <div className="border-t border-border/50 pt-2 text-[10px] text-muted leading-relaxed text-center">
+                Please keep your phone active. A Cologne Noir representative will contact you via SMS, Phone, or WhatsApp to confirm your shipping details.
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted">Payment Method:</span>
-                <span className="text-foreground">Cash on Delivery (COD)</span>
-              </div>
-            </div>
-            <div className="border-t border-border/50 pt-2 text-[10px] text-muted leading-relaxed text-center">
-              Please keep your phone active. A Cologne Noir representative will contact you via SMS, Phone, or WhatsApp to confirm your shipping details.
             </div>
           </div>
-        ) : null}
+        ) : (
+          <div className="p-6 border border-border bg-background text-muted text-sm font-mono">
+            Invalid or missing order reference.
+          </div>
+        )}
 
         <p className="mx-auto max-w-md text-xs leading-relaxed text-muted font-sans">
           Your order will not be processed or shipped until a representative has verified the request. Thank you for shopping with Cologne Noir.

@@ -1,12 +1,43 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { ZodError } from "zod";
 import { formatBdt } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { customDecantPrice } from "@/lib/pricing";
 import { variantLabel } from "@/lib/products";
 import { orderSchema } from "@/lib/validations";
-import { sendWhatsAppNotification } from "@/lib/whatsapp";
+
+function createOrderNumber() {
+  return `CN-${Date.now().toString().slice(-6)}`;
+}
+
+function buildOrderMessage(params: {
+  orderNumber: string;
+  customerName: string;
+  phone: string;
+  address: string;
+  city: string;
+  productName: string;
+  label: string;
+  quantity: number;
+  totalBdt: number;
+  notes?: string | null;
+}) {
+  return [
+    `🛎️ New Order — ${params.orderNumber}`,
+    "",
+    `👤 ${params.customerName}`,
+    `📞 ${params.phone}`,
+    `📍 ${params.address}, ${params.city}`,
+    "",
+    `🧴 ${params.label} — ${params.productName} × ${params.quantity}`,
+    `💰 Total: ${formatBdt(params.totalBdt)}`,
+    params.notes ? `📝 Note: ${params.notes}` : undefined,
+    "",
+    "Confirm via Prisma Studio once you've contacted the customer.",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
 
 function createOrderNumber() {
   return `CN-${Date.now().toString().slice(-6)}`;
@@ -128,21 +159,6 @@ export async function POST(request: Request) {
 
       return createdOrder;
     });
-
-    void sendWhatsAppNotification(
-      buildOrderMessage({
-        orderNumber: order.orderNumber,
-        customerName: body.customerName,
-        phone: body.phone,
-        address: body.address,
-        city: body.city,
-        productName,
-        label,
-        quantity: body.quantity,
-        totalBdt: totalPriceBdtAtOrder,
-        notes: body.notes,
-      }),
-    );
 
     return NextResponse.json({ success: true, orderNumber: order.orderNumber });
   } catch (error) {

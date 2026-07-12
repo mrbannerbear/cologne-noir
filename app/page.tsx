@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ProductGrid } from "@/components/product-grid";
 import { ShopAllLink } from "@/components/catalog-filters";
-import { formatBdt } from "@/lib/format";
 import { getCollectionStats, getFeaturedProducts } from "@/lib/products";
 
 export const dynamic = "force-dynamic";

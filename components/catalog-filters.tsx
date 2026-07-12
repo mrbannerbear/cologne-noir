@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { Gender } from "@prisma/client";
 import { cn } from "@/lib/utils";
-import { useState, useEffect } from "react";
+
 
 const filters: Array<{ value: "ALL" | Gender; label: string }> = [
   { value: "ALL", label: "All" },
@@ -16,14 +16,9 @@ const filters: Array<{ value: "ALL" | Gender; label: string }> = [
 export function SearchBar() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [query, setQuery] = useState(searchParams.get("q") || "");
-
-  useEffect(() => {
-    setQuery(searchParams.get("q") || "");
-  }, [searchParams]);
+  const query = searchParams.get("q") || "";
 
   function handleSearch(value: string) {
-    setQuery(value);
     const params = new URLSearchParams(searchParams.toString());
     if (value) {
       params.set("q", value);

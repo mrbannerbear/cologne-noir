@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { customDecantPrice } from "@/lib/pricing";
 import { variantLabel } from "@/lib/products";
 import { orderSchema } from "@/lib/validations";
+import { Prisma } from "@prisma/client";
 
 function createOrderNumber() {
   return `CN-${Date.now().toString().slice(-6)}`;
@@ -63,7 +64,7 @@ export async function POST(request: Request) {
     const totalPriceBdtAtOrder = unitPriceBdt * body.quantity;
     const productName = `${product.brand} ${product.name}`;
 
-    const order = await prisma.$transaction(async (tx) => {
+    const order = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const createdOrder = await tx.order.create({
         data: {
           orderNumber,

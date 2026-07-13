@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, PanInfo } from "framer-motion";
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 
@@ -54,7 +54,7 @@ export function GlassSheet({ open, onClose, title, children }: GlassSheetProps) 
             drag="y"
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={0.06}
-            onDragEnd={(_, info) => {
+            onDragEnd={(_: unknown, info: PanInfo) => {
               if (info.offset.y > 100) {
                 onClose();
               }

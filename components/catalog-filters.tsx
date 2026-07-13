@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import type { ChangeEvent } from "react";
 import type { Gender } from "@prisma/client";
 import { cn } from "@/lib/utils";
 
@@ -33,7 +34,7 @@ export function SearchBar() {
       <input
         type="text"
         value={query}
-        onChange={(e) => handleSearch(e.target.value)}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => handleSearch(e.target.value)}
         placeholder="Search brand or perfume..."
         className="w-full bg-transparent border border-border rounded-[2px] px-4 py-2 text-sm text-foreground outline-none focus:border-ink transition-all duration-300 placeholder:text-muted/50"
       />

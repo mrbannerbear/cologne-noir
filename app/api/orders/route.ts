@@ -11,7 +11,7 @@ function createOrderNumber() {
 
 export async function POST(request: Request) {
   try {
-    const payload = await request.json();
+    const payload: unknown = await request.json();
     const body = orderSchema.parse(payload);
 
     const product = await prisma.product.findUnique({

@@ -4,6 +4,7 @@ import { NotesPyramid } from "@/components/notes-pyramid";
 import { ProductPurchase } from "@/components/product-purchase";
 import { formatBdt } from "@/lib/format";
 import { genderLabel, getActiveProducts, getProductBySlug } from "@/lib/products";
+import type { ProductWithVariants } from "@/types";
 
 export const dynamic = "force-dynamic";
 
@@ -115,7 +116,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <h2 className="font-display text-2xl font-light text-foreground mt-1">Related Fragrances</h2>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((item) => (
+            {related.map((item: ProductWithVariants) => (
               <Link
                 key={item.id}
                 href={`/products/${item.slug}`}

@@ -1,12 +1,13 @@
 "use client";
 
-import type { FormEvent } from "react";
+import type { FormEvent, ChangeEvent } from "react";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatBdt } from "@/lib/format";
 import type { ProductWithVariants } from "@/types";
 import { GlassSheet } from "@/components/ui/glass-sheet";
-import { VariantSelector, type VariantSelection } from "@/components/variant-selector";
+import { VariantSelector } from "@/components/variant-selector";
+import type { VariantSelection } from "@/types";
 import { cn } from "@/lib/utils";
 
 type ProductPurchaseProps = {
@@ -131,7 +132,7 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
                 type="number"
                 min="1"
                 value={quantity}
-                onChange={(event) => setQuantity(event.target.value)}
+                 onChange={(event: ChangeEvent<HTMLInputElement>) => setQuantity(event.target.value)}
                 className="w-full bg-transparent border-b border-border focus:border-ink pb-2 text-sm text-foreground outline-none focus:border-b-2 transition-all duration-200"
               />
             </div>
@@ -175,7 +176,7 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
               <span className="label-caps text-[10px] text-muted">Full name</span>
               <input
                 value={customerName}
-                onChange={(event) => setCustomerName(event.target.value)}
+                 onChange={(event: ChangeEvent<HTMLInputElement>) => setCustomerName(event.target.value)}
                 className="w-full bg-transparent border-b border-border focus:border-ink pb-2 text-sm text-foreground outline-none focus:border-b-2 transition-all duration-200"
                 placeholder="Sayed Rahman"
               />
@@ -186,7 +187,7 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
                 <span className="label-caps text-[10px] text-muted">Phone</span>
                 <input
                   value={phone}
-                  onChange={(event) => setPhone(event.target.value)}
+                   onChange={(event: ChangeEvent<HTMLInputElement>) => setPhone(event.target.value)}
                   className="w-full bg-transparent border-b border-border focus:border-ink pb-2 text-sm text-foreground outline-none focus:border-b-2 transition-all duration-200"
                   placeholder="017XXXXXXXX"
                 />
@@ -196,7 +197,7 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
                 <span className="label-caps text-[10px] text-muted">City</span>
                 <input
                   value={city}
-                  onChange={(event) => setCity(event.target.value)}
+                   onChange={(event: ChangeEvent<HTMLInputElement>) => setCity(event.target.value)}
                   className="w-full bg-transparent border-b border-border focus:border-ink pb-2 text-sm text-foreground outline-none focus:border-b-2 transition-all duration-200"
                   placeholder="Chittagong"
                 />
@@ -207,7 +208,7 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
               <span className="label-caps text-[10px] text-muted">Delivery Address</span>
               <textarea
                 value={address}
-                onChange={(event) => setAddress(event.target.value)}
+                 onChange={(event: ChangeEvent<HTMLTextAreaElement>) => setAddress(event.target.value)}
                 rows={2}
                 className="w-full bg-transparent border-b border-border focus:border-ink pb-2 text-sm text-foreground outline-none focus:border-b-2 transition-all duration-200 resize-none"
                 placeholder="House 12, Road 4, Nasirabad"
@@ -218,7 +219,7 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
               <span className="label-caps text-[10px] text-muted">Special Notes (optional)</span>
               <input
                 value={notes}
-                onChange={(event) => setNotes(event.target.value)}
+                 onChange={(event: ChangeEvent<HTMLInputElement>) => setNotes(event.target.value)}
                 className="w-full bg-transparent border-b border-border focus:border-ink pb-2 text-sm text-foreground outline-none focus:border-b-2 transition-all duration-200"
                 placeholder="Call after 6pm"
               />

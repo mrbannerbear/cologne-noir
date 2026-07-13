@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
-import { formatBdt } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { customDecantPrice } from "@/lib/pricing";
 import { variantLabel } from "@/lib/products";
@@ -8,68 +7,6 @@ import { orderSchema } from "@/lib/validations";
 
 function createOrderNumber() {
   return `CN-${Date.now().toString().slice(-6)}`;
-}
-
-function buildOrderMessage(params: {
-  orderNumber: string;
-  customerName: string;
-  phone: string;
-  address: string;
-  city: string;
-  productName: string;
-  label: string;
-  quantity: number;
-  totalBdt: number;
-  notes?: string | null;
-}) {
-  return [
-    `🛎️ New Order — ${params.orderNumber}`,
-    "",
-    `👤 ${params.customerName}`,
-    `📞 ${params.phone}`,
-    `📍 ${params.address}, ${params.city}`,
-    "",
-    `🧴 ${params.label} — ${params.productName} × ${params.quantity}`,
-    `💰 Total: ${formatBdt(params.totalBdt)}`,
-    params.notes ? `📝 Note: ${params.notes}` : undefined,
-    "",
-    "Confirm via Prisma Studio once you've contacted the customer.",
-  ]
-    .filter(Boolean)
-    .join("\n");
-}
-
-function createOrderNumber() {
-  return `CN-${Date.now().toString().slice(-6)}`;
-}
-
-function buildOrderMessage(params: {
-  orderNumber: string;
-  customerName: string;
-  phone: string;
-  address: string;
-  city: string;
-  productName: string;
-  label: string;
-  quantity: number;
-  totalBdt: number;
-  notes?: string | null;
-}) {
-  return [
-    `🛎️ New Order — ${params.orderNumber}`,
-    "",
-    `👤 ${params.customerName}`,
-    `📞 ${params.phone}`,
-    `📍 ${params.address}, ${params.city}`,
-    "",
-    `🧴 ${params.label} — ${params.productName} × ${params.quantity}`,
-    `💰 Total: ${formatBdt(params.totalBdt)}`,
-    params.notes ? `📝 Note: ${params.notes}` : undefined,
-    "",
-    "Confirm via Prisma Studio once you've contacted the customer.",
-  ]
-    .filter(Boolean)
-    .join("\n");
 }
 
 export async function POST(request: Request) {
@@ -160,6 +97,27 @@ export async function POST(request: Request) {
       return createdOrder;
     });
 
+    // Send Telegram notification
+    const telegramMessage = "Order confirmed"
+  + `\nOrder Number: ${order.orderNumber}`
+  + `\nCustomer: ${order.customerName}`
+  + `\nPhone: ${order.phone}`
+  + `\nAddress: ${order.address}, ${order.city}`
+  + `\nProduct: ${productName}`
+  + `\nVariant: ${label}`
+  + `\nQuantity: ${body.quantity}`
+  + `\nTotal Price: ${totalPriceBdtAtOrder} BDT`
+  + (order.notes ? `\nNotes: ${order.notes}` : "");
+
+    await fetch(`https://api.telegram.org/bot8644272195:AAFnW1NuFf8iWU6oDe_68j4B1NYGVZp6ReY/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: process.env.TELEGRAM_CHAT_ID,
+        text: telegramMessage
+      })
+    });
+
     return NextResponse.json({ success: true, orderNumber: order.orderNumber });
   } catch (error) {
     if (error instanceof ZodError) {
@@ -173,3 +131,4 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, message: "Could not create order." }, { status: 500 });
   }
 }
+

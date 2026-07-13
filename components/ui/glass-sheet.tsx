@@ -54,7 +54,7 @@ export function GlassSheet({ open, onClose, title, children }: GlassSheetProps) 
             drag="y"
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={0.06}
-            onDragEnd={(_: any, info: PanInfo) => {
+            onDragEnd={(_: unknown, info: PanInfo) => {
               if (info.offset.y > 100) {
                 onClose();
               }

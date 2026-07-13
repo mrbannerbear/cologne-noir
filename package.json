@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "type-check": "tsc --noEmit",
     "db:migrate": "bunx dotenv -e .env.local -- bunx prisma migrate dev",
     "db:seed": "bunx dotenv -e .env.local -- bunx prisma db seed",
     "db:studio": "bunx dotenv -e .env.local -- bunx prisma studio"

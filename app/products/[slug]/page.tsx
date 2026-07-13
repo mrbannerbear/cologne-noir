@@ -115,7 +115,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <h2 className="font-display text-2xl font-light text-foreground mt-1">Related Fragrances</h2>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((item) => (
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            {related.map((item: any) => (
               <Link
                 key={item.id}
                 href={`/products/${item.slug}`}

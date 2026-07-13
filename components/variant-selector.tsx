@@ -6,10 +6,7 @@ import { customDecantPrice } from "@/lib/pricing";
 import { formatBdt } from "@/lib/format";
 import type { ProductVariantView } from "@/types";
 import { cn } from "@/lib/utils";
-
-export type VariantSelection =
-  | { mode: "preset"; variantId: string; label: string; unitPrice: number }
-  | { mode: "custom"; customMl: number; label: string; unitPrice: number };
+import type { VariantSelection } from "@/types";
 
 type VariantSelectorProps = {
   product: {

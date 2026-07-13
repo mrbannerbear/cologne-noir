@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import { formatBdt } from "@/lib/format";
 import type { ProductWithVariants } from "@/types";
 import { GlassSheet } from "@/components/ui/glass-sheet";
-import { VariantSelector, type VariantSelection } from "@/components/variant-selector";
+import { VariantSelector } from "@/components/variant-selector";
+import type { VariantSelection } from "@/types";
 import { cn } from "@/lib/utils";
 
 type ProductPurchaseProps = {

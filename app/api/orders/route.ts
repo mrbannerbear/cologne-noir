@@ -63,8 +63,7 @@ export async function POST(request: Request) {
     const totalPriceBdtAtOrder = unitPriceBdt * body.quantity;
     const productName = `${product.brand} ${product.name}`;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const order = await prisma.$transaction(async (tx: any) => {
+    const order = await prisma.$transaction(async (tx) => {
       const createdOrder = await tx.order.create({
         data: {
           orderNumber,

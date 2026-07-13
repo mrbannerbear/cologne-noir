@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useMemo, useState } from "react";
+import { useMemo, useState, ChangeEvent } from "react";
 import { customDecantPrice } from "@/lib/pricing";
 import { formatBdt } from "@/lib/format";
 import type { ProductVariantView } from "@/types";
@@ -142,7 +142,7 @@ export function VariantSelector({ product, selection, onChange }: VariantSelecto
                       type="number"
                       min="1"
                       value={customMl}
-                      onChange={(event) => updateCustomMl(event.target.value)}
+                       onChange={(event: ChangeEvent<HTMLInputElement>) => updateCustomMl(event.target.value)}
                       className="w-full bg-transparent border-b border-border focus:border-ink pb-2 text-sm text-foreground outline-none focus:border-b-2 transition-all duration-200"
                       placeholder="e.g. 20"
                     />

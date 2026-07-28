@@ -110,11 +110,21 @@ export async function POST(request: Request) {
   + `\nTotal Price: ${totalPriceBdtAtOrder} BDT`
   + (order.notes ? `\nNotes: ${order.notes}` : "");
 
-    await fetch(`https://api.telegram.org/bot8644272195:AAFnW1NuFf8iWU6oDe_68j4B1NYGVZp6ReY/sendMessage`, {
+    await fetch(`https://api.telegram.org/${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         chat_id: process.env.TELEGRAM_CHAT_ID,
+        text: telegramMessage
+      })
+    });
+
+    // Send community notification
+    await fetch(`https://api.telegram.org/${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: process.env.TELEGRAM_COMMUNITY_CHAT_ID,
         text: telegramMessage
       })
     });

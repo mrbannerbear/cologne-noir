@@ -5,6 +5,9 @@ import { customDecantPrice } from "@/lib/pricing";
 import { variantLabel } from "@/lib/products";
 import { orderSchema } from "@/lib/validations";
 
+const ENVIRONMENT = process.env.NODE_ENV || "development";
+const MESSAGE_TYPE = ENVIRONMENT === "production" ? "Order confirmed" : "Order confirmed (Development)";
+
 function createOrderNumber() {
   return `CN-${Date.now().toString().slice(-6)}`;
 }
@@ -99,7 +102,7 @@ export async function POST(request: Request) {
     });
 
     // Send Telegram notification
-    const telegramMessage = "Order confirmed"
+    const telegramMessage = `${MESSAGE_TYPE}:\n`
   + `\nOrder Number: ${order.orderNumber}`
   + `\nCustomer: ${order.customerName}`
   + `\nPhone: ${order.phone}`

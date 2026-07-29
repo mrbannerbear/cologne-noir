@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { FadeIn } from "@/components/fade-in";
 import { NotesPyramid } from "@/components/notes-pyramid";
 import { ProductPurchase } from "@/components/product-purchase";
 import { formatBdt } from "@/lib/format";
@@ -42,6 +43,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       </div>
 
       {/* Split-Screen Product Frame */}
+      <FadeIn>
       <section className="grid overflow-hidden border border-border lg:grid-cols-2">
         
         {/* Left Half: Photographic Visual */}
@@ -108,9 +110,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
         </div>
       </section>
+      </FadeIn>
 
       {/* More to explore Section */}
       {related.length ? (
+        <FadeIn delay={0.15}>
         <section className="border border-border bg-background p-6 sm:p-10 space-y-6">
           <div>
             <p className="label-caps text-xs text-muted">Curated options</p>
@@ -134,6 +138,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             ))}
           </div>
         </section>
+        </FadeIn>
       ) : null}
 
     </div>

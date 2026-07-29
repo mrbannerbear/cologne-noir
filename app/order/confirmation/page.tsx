@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FadeIn } from "@/components/fade-in";
 import { prisma } from "@/lib/prisma";
 
 type OrderConfirmationProps = {
@@ -20,6 +21,7 @@ export default async function OrderConfirmationPage({ searchParams }: OrderConfi
     <div className="mx-auto flex w-full max-w-2xl items-center px-4 py-12 sm:px-6 lg:px-8 lg:py-20">
       
       {/* Receipt Container */}
+      <FadeIn>
       <section className="w-full border border-border bg-background-warm p-6 sm:p-12 text-center space-y-8">
         
         <div className="space-y-4">
@@ -88,6 +90,7 @@ export default async function OrderConfirmationPage({ searchParams }: OrderConfi
         </div>
 
       </section>
+      </FadeIn>
 
     </div>
   );

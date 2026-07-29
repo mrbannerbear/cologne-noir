@@ -72,6 +72,7 @@ model Order {
   address      String       @db.Text
   city         String
   notes        String?      @db.Text
+  environment  String       @default("production")
   status       OrderStatus  @default(PENDING)
   totalBdt     Int
   createdAt    DateTime     @default(now())

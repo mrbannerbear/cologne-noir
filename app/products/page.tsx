@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { GenderFilterBar, SearchBar } from "@/components/catalog-filters";
+import { FadeIn } from "@/components/fade-in";
 import { ProductGrid } from "@/components/product-grid";
 import { getActiveProducts } from "@/lib/products";
 import type { GenderFilter } from "@/types";
@@ -27,6 +28,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   return (
     <div className="mx-auto w-full max-w-360xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
+      <FadeIn>
       <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-3xl space-y-4">
           <p className="label-caps text-muted">Catalog</p>
@@ -47,6 +49,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           </Suspense>
         </div>
       </div>
+      </FadeIn>
 
       <div className="mt-8">
         <ProductGrid products={products} />

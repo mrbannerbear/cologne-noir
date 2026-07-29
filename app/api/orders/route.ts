@@ -4,9 +4,13 @@ import { prisma } from "@/lib/prisma";
 import { customDecantPrice } from "@/lib/pricing";
 import { variantLabel } from "@/lib/products";
 import { orderSchema } from "@/lib/validations";
+import { sendTelegramMessage } from "@/lib/telegram";
 
 const ENVIRONMENT = process.env.NODE_ENV || "development";
-const MESSAGE_TYPE = ENVIRONMENT === "production" ? "Order confirmed" : "Order confirmed (Development)";
+const MESSAGE_TYPE =
+  ENVIRONMENT === "production"
+    ? "Order confirmed"
+    : "Order confirmed (Development)";
 
 function createOrderNumber() {
   return `CN-${Date.now().toString().slice(-6)}`;
@@ -22,7 +26,10 @@ export async function POST(request: Request) {
     });
 
     if (!product || !product.isActive) {
-      return NextResponse.json({ success: false, message: "Product not found." }, { status: 404 });
+      return NextResponse.json(
+        { success: false, message: "Product not found." },
+        { status: 404 },
+      );
     }
 
     const orderNumber = createOrderNumber();
@@ -37,11 +44,17 @@ export async function POST(request: Request) {
       });
 
       if (!variant) {
-        return NextResponse.json({ success: false, message: "Variant not found." }, { status: 404 });
+        return NextResponse.json(
+          { success: false, message: "Variant not found." },
+          { status: 404 },
+        );
       }
 
       if (variant.stockQty < body.quantity) {
-        return NextResponse.json({ success: false, message: "Variant is sold out." }, { status: 409 });
+        return NextResponse.json(
+          { success: false, message: "Variant is sold out." },
+          { status: 409 },
+        );
       }
 
       label = variantLabel(variant.size, product.actualBottleMl);
@@ -50,27 +63,36 @@ export async function POST(request: Request) {
     } else {
       const ml = body.customMl ?? 0;
       label = `${ml}ml Custom Decant`;
-      
+
       const fullBottleVariant = await prisma.productVariant.findFirst({
         where: { productId: product.id, size: "FULL_BOTTLE" },
       });
 
       if (!fullBottleVariant) {
-        return NextResponse.json({ success: false, message: "Full bottle pricing not found." }, { status: 404 });
+        return NextResponse.json(
+          { success: false, message: "Full bottle pricing not found." },
+          { status: 404 },
+        );
       }
 
-      unitPriceBdt = customDecantPrice(fullBottleVariant.priceBdt, product.actualBottleMl, ml);
+      unitPriceBdt = customDecantPrice(
+        fullBottleVariant.priceBdt,
+        product.actualBottleMl,
+        ml,
+      );
       customMl = ml;
     }
 
     const totalPriceBdtAtOrder = unitPriceBdt * body.quantity;
     const productName = `${product.brand} ${product.name}`;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const order = await prisma.$transaction(async (tx: any) => {
+    const environment = process.env.NODE_ENV ?? "development";
+
+    const order = await prisma.$transaction(async (tx) => {
       const createdOrder = await tx.order.create({
         data: {
           orderNumber,
+          environment,
           customerName: body.customerName,
           phone: body.phone,
           address: body.address,
@@ -101,48 +123,42 @@ export async function POST(request: Request) {
       return createdOrder;
     });
 
-    // Send Telegram notification
-    const telegramMessage = `${MESSAGE_TYPE}:\n`
-  + `\nOrder Number: ${order.orderNumber}`
-  + `\nCustomer: ${order.customerName}`
-  + `\nPhone: ${order.phone}`
-  + `\nAddress: ${order.address}, ${order.city}`
-  + `\nProduct: ${productName}`
-  + `\nVariant: ${label}`
-  + `\nQuantity: ${body.quantity}`
-  + `\nTotal Price: ${totalPriceBdtAtOrder} BDT`
-  + (order.notes ? `\nNotes: ${order.notes}` : "");
+    // Send Telegram notification (fire-and-forget, non-blocking)
+    const telegramMessage =
+      `${MESSAGE_TYPE}:\n` +
+      `\nOrder Number: ${order.orderNumber}` +
+      `\nCustomer: ${order.customerName}` +
+      `\nPhone: ${order.phone}` +
+      `\nAddress: ${order.address}, ${order.city}` +
+      `\nProduct: ${productName}` +
+      `\nVariant: ${label}` +
+      `\nQuantity: ${body.quantity}` +
+      `\nTotal Price: ${totalPriceBdtAtOrder} BDT` +
+      (order.notes ? `\nNotes: ${order.notes}` : "");
 
-    await fetch(`https://api.telegram.org/${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: process.env.TELEGRAM_CHAT_ID,
-        text: telegramMessage
-      })
-    });
-
-    // Send community notification
-    await fetch(`https://api.telegram.org/${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: process.env.TELEGRAM_COMMUNITY_CHAT_ID,
-        text: telegramMessage
-      })
-    });
+    sendTelegramMessage(process.env.TELEGRAM_CHAT_ID, telegramMessage);
+    sendTelegramMessage(
+      process.env.TELEGRAM_COMMUNITY_CHAT_ID,
+      telegramMessage,
+    );
 
     return NextResponse.json({ success: true, orderNumber: order.orderNumber });
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json(
-        { success: false, message: "Invalid order payload.", errors: error.flatten() },
+        {
+          success: false,
+          message: "Invalid order payload.",
+          errors: error.flatten(),
+        },
         { status: 400 },
       );
     }
 
     console.error("Order creation failed:", error);
-    return NextResponse.json({ success: false, message: "Could not create order." }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: "Could not create order." },
+      { status: 500 },
+    );
   }
 }
-

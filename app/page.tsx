@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { ProductGrid } from "@/components/product-grid";
 import { ShopAllLink } from "@/components/catalog-filters";
+import { FadeIn } from "@/components/fade-in";
 import { getCollectionStats, getFeaturedProducts } from "@/lib/products";
+import Image from "next/image";
 
 export const dynamic = "force-dynamic";
 
@@ -17,13 +19,16 @@ export default async function Home() {
     <div className="mx-auto flex w-full max-w-360 flex-col gap-16 px-4 py-8 sm:px-6 lg:px-8 lg:py-16">
       
       {/* Editorial Hero: Split-Screen Layout */}
-      <section className="grid overflow-hidden border border-border lg:grid-cols-2 min-h-[500px]">
+      <FadeIn>
+      <section className="grid overflow-hidden border border-border lg:grid-cols-2 min-h-125">
         
         {/* Left Side: Photographic or Design Visual */}
         <div className="relative aspect-square lg:aspect-auto bg-surface-paper border-b border-border lg:border-b-0 lg:border-r">
           {coverImage ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
+              fetchPriority="high"
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
               src={coverImage}
               alt={`${heroProduct.brand} ${heroProduct.name}`}
               className="absolute inset-0 h-full w-full object-cover"
@@ -104,8 +109,10 @@ export default async function Home() {
         </div>
 
       </section>
+      </FadeIn>
 
       {/* Featured Grid Section */}
+      <FadeIn delay={0.15}>
       <section className="space-y-6 pt-4">
         <div className="flex items-end justify-between border-b border-border pb-4">
           <div>
@@ -123,6 +130,7 @@ export default async function Home() {
         </div>
         <ProductGrid products={featuredProducts} />
       </section>
+      </FadeIn>
 
     </div>
   );

@@ -26,12 +26,12 @@ export default async function Home() {
         <div className="relative aspect-square lg:aspect-auto bg-surface-paper border-b border-border lg:border-b-0 lg:border-r">
           {coverImage ? (
             <Image
-              fetchPriority="high"
+              priority
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"
               src={coverImage}
               alt={`${heroProduct.brand} ${heroProduct.name}`}
-              className="absolute inset-0 h-full w-full object-cover"
+              className="object-cover"
             />
           ) : (
             <div className="absolute inset-0 flex flex-col justify-between p-8 bg-background-warm">

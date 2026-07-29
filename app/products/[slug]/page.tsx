@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { FadeIn } from "@/components/fade-in";
 import { NotesPyramid } from "@/components/notes-pyramid";
@@ -12,6 +14,20 @@ export const dynamic = "force-dynamic";
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
 };
+
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
+
+  if (!product) {
+    return { title: "Product Not Found | Cologne Noir" };
+  }
+
+  return {
+    title: `${product.brand} ${product.name} | Cologne Noir`,
+    description: product.description ?? `${product.brand} ${product.name} — decants and full bottles.`,
+  };
+}
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
@@ -49,11 +65,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
         {/* Left Half: Photographic Visual */}
         <div className="relative aspect-[4/5] bg-background-warm border-b border-border lg:border-b-0 lg:border-r">
           {coverImage ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={coverImage}
               alt={`${product.brand} ${product.name}`}
-              className="h-full w-full object-cover"
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover"
             />
           ) : (
             <div className="flex h-full flex-col justify-between p-8 bg-background-warm">

@@ -3,9 +3,16 @@ import { GenderFilterBar, SearchBar } from "@/components/catalog-filters";
 import { FadeIn } from "@/components/fade-in";
 import { ProductGrid } from "@/components/product-grid";
 import { getActiveProducts } from "@/lib/products";
+import type { Metadata } from "next";
 import type { GenderFilter } from "@/types";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Catalog",
+  description:
+    "Browse our full catalog of authentic perfume decants and full bottles. Filter by gender or search by brand and name.",
+};
 
 type ProductsPageProps = {
   searchParams: Promise<{ gender?: string; q?: string }>;

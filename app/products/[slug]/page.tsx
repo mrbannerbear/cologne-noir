@@ -20,12 +20,32 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const product = await getProductBySlug(slug);
 
   if (!product) {
-    return { title: "Product Not Found | Cologne Noir" };
+    return { title: "Product Not Found" };
   }
 
+  const coverImage = product.images[0];
+  const description = product.description ?? `${product.brand} ${product.name} — decants and full bottles.`;
+
   return {
-    title: `${product.brand} ${product.name} | Cologne Noir`,
-    description: product.description ?? `${product.brand} ${product.name} — decants and full bottles.`,
+    title: `${product.brand} ${product.name}`,
+    description,
+    alternates: {
+      canonical: `https://colognenoir.com/products/${product.slug}`,
+    },
+    openGraph: {
+      title: `${product.brand} ${product.name}`,
+      description,
+      url: `https://colognenoir.com/products/${product.slug}`,
+      images: coverImage
+        ? [{ url: coverImage, width: 1200, height: 1500, alt: `${product.brand} ${product.name}` }]
+        : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${product.brand} ${product.name}`,
+      description,
+      images: coverImage ? [coverImage] : [],
+    },
   };
 }
 
@@ -41,9 +61,31 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
   const coverImage = product.images[0];
 
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: `${product.brand} ${product.name}`,
+    description: product.description ?? `${product.brand} ${product.name} — decants and full bottles.`,
+    brand: { "@type": "Brand", name: product.brand },
+    category: product.gender,
+    offers: product.variants.map((variant) => ({
+      "@type": "Offer",
+      price: variant.priceBdt,
+      priceCurrency: "BDT",
+      availability: variant.stockQty > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      itemCondition: "https://schema.org/NewCondition",
+    })),
+    image: coverImage ? [coverImage] : [],
+  };
+
   return (
     <div className="mx-auto w-full max-w-360xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12 space-y-8">
       
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
+
       {/* Back button */}
       <div>
         <Link

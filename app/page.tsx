@@ -3,9 +3,21 @@ import Image from "next/image";
 import { ProductGrid } from "@/components/product-grid";
 import { ShopAllLink } from "@/components/catalog-filters";
 import { FadeIn } from "@/components/fade-in";
+import type { Metadata } from "next";
 import { getCollectionStats, getFeaturedProducts } from "@/lib/products";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Perfume Decants & Full Bottles — COD Bangladesh",
+  description:
+    "Browse authentic perfume decants and full bottles from Cologne Noir. Cash on delivery across Bangladesh. Verified by WhatsApp.",
+  openGraph: {
+    title: "Cologne Noir — Perfume Decants & Full Bottles",
+    description:
+      "Authentic fragrance decants and full bottles. Cash on delivery across Bangladesh. Verified by WhatsApp.",
+  },
+};
 
 export default async function Home() {
   const [featuredProducts, stats] = await Promise.all([
@@ -15,9 +27,30 @@ export default async function Home() {
   const heroProduct = featuredProducts[0];
   const coverImage = heroProduct?.images[0];
 
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Cologne Noir",
+    url: "https://colognenoir.com",
+    description:
+      "Perfume decants and full bottles from Chittagong. Browse the catalog, order COD, confirm by WhatsApp.",
+    foundingDate: "2024",
+    areaServed: "BD",
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer service",
+      availableLanguage: ["Bengali", "English"],
+    },
+  };
+
   return (
     <div className="mx-auto flex w-full max-w-360 flex-col gap-16 px-4 py-8 sm:px-6 lg:px-8 lg:py-16">
-      
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
+
       {/* Editorial Hero: Split-Screen Layout */}
       <section className="grid overflow-hidden border border-border lg:grid-cols-2 min-h-125">
         

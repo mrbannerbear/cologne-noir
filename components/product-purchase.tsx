@@ -3,6 +3,7 @@
 import type { FormEvent, ChangeEvent } from "react";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { submitOrder } from "@/lib/actions";
 import { formatBdt } from "@/lib/format";
 import type { ProductWithVariants } from "@/types";
 import { GlassSheet } from "@/components/ui/glass-sheet";
@@ -74,30 +75,24 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
     setErrorMessage(null);
 
     try {
-      const response = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          productId: product.id,
-          productVariantId: selection.mode === "preset" ? selection.variantId : undefined,
-          customMl: selection.mode === "custom" ? selection.customMl : undefined,
-          quantity: qty,
-          customerName,
-          phone,
-          address,
-          city,
-          notes: notes.trim() ? notes.trim() : null,
-        }),
+      const result = await submitOrder({
+        productId: product.id,
+        productVariantId: selection.mode === "preset" ? selection.variantId : undefined,
+        customMl: selection.mode === "custom" ? selection.customMl : undefined,
+        quantity: qty,
+        customerName,
+        phone,
+        address,
+        city,
+        notes: notes.trim() ? notes.trim() : null,
       });
 
-      const data = (await response.json()) as { success: boolean; orderNumber?: string; message?: string };
-
-      if (!response.ok || !data.success || !data.orderNumber) {
-        setErrorMessage(data.message ?? "Unable to place order.");
+      if (!result.success) {
+        setErrorMessage("message" in result ? result.message : "Unable to place order.");
         return;
       }
 
-      router.push(`/order/confirmation?orderNumber=${encodeURIComponent(data.orderNumber)}`);
+      router.push(`/order/confirmation?orderNumber=${encodeURIComponent(result.orderNumber)}`);
     } catch {
       setErrorMessage("Unable to place order right now.");
     } finally {

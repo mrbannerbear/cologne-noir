@@ -5,15 +5,11 @@ import { ProductGrid } from "@/components/product-grid";
 import { getActiveProducts } from "@/lib/products";
 import type { GenderFilter } from "@/types";
 
-export const dynamic = "force-dynamic";
-
 type ProductsPageProps = {
   searchParams: Promise<{ gender?: string; q?: string }>;
 };
 
 function parseGender(value?: string): GenderFilter {
-// ... (keep existing parseGender)
-
   const normalized = value?.toUpperCase();
   if (normalized === "MEN" || normalized === "WOMEN" || normalized === "UNISEX") {
     return normalized;
@@ -28,7 +24,6 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   return (
     <div className="mx-auto w-full max-w-360xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
-      <FadeIn>
       <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-3xl space-y-4">
           <p className="label-caps text-muted">Catalog</p>
@@ -41,18 +36,19 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           </p>
         </div>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-          <Suspense fallback={<div className="h-10 w-64" />}>
+          <Suspense fallback={<div className="h-10 w-64 bg-muted/10 rounded-[2px]" />}>
             <SearchBar />
           </Suspense>
-          <Suspense fallback={<div className="h-10" />}>
+          <Suspense fallback={<div className="h-10 w-16 bg-muted/10 rounded-[2px]" />}>
             <GenderFilterBar />
           </Suspense>
         </div>
       </div>
-      </FadeIn>
 
       <div className="mt-8">
-        <ProductGrid products={products} />
+        <FadeIn>
+          <ProductGrid products={products} />
+        </FadeIn>
       </div>
     </div>
   );

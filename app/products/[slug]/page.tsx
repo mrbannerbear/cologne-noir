@@ -6,8 +6,10 @@ import { FadeIn } from "@/components/fade-in";
 import { NotesPyramid } from "@/components/notes-pyramid";
 import { ProductPurchase } from "@/components/product-purchase";
 import { formatBdt } from "@/lib/format";
-import { genderLabel, getActiveProducts, getProductBySlug } from "@/lib/products";
+import { genderLabel, getProductBySlug, getRelatedProducts } from "@/lib/products";
 import type { ProductWithVariants } from "@/types";
+
+export const dynamic = "force-dynamic";
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
@@ -29,16 +31,14 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const [product, relatedProducts] = await Promise.all([
+  const [product, related] = await Promise.all([
     getProductBySlug(slug),
-    getActiveProducts(),
+    getRelatedProducts(slug, 3),
   ]);
 
   if (!product) {
     notFound();
   }
-
-  const related = relatedProducts.filter((item: ProductWithVariants) => item.slug !== slug).slice(0, 3);
   const coverImage = product.images[0];
 
   return (

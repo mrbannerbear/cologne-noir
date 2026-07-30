@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Bodoni_Moda, Inter, Courier_Prime } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { Footer } from "@/components/footer";
 import { NavBar } from "@/components/nav-bar";
@@ -75,6 +76,7 @@ export default function RootLayout({
         </Suspense>
         <main className="relative z-10 flex-1 flex flex-col">{children}</main>
         <Footer />
+        <SpeedInsights />
       </body>
     </html>
   );

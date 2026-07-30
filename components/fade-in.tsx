@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { motion } from "framer-motion";
 
 const pressuredEasing: [number, number, number, number] = [0.4, 0, 0.6, 1];
@@ -10,12 +11,12 @@ type FadeInProps = {
   delay?: number;
 };
 
-export function FadeIn({ children, className, delay = 0 }: FadeInProps) {
+export const FadeIn = memo(function FadeIn({ children, className, delay = 0 }: FadeInProps) {
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       transition={{
         duration: 0.7,
         ease: pressuredEasing,
@@ -25,4 +26,4 @@ export function FadeIn({ children, className, delay = 0 }: FadeInProps) {
       {children}
     </motion.div>
   );
-}
+});

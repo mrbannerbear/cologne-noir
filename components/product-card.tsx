@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { formatBdt } from "@/lib/format";
 import { genderLabel } from "@/lib/products";
 import type { ProductWithVariants } from "@/types";
@@ -25,11 +26,12 @@ export function ProductCard({ product, className }: ProductCardProps) {
       {/* Product Image Frame */}
       <div className="relative aspect-[4/5] overflow-hidden border border-border bg-background-warm">
         {coverImage ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={coverImage}
             alt={`${product.brand} ${product.name}`}
-            className="h-full w-full object-cover"
+            fill
+            sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
+            className="object-cover"
           />
         ) : (
           <div className="flex h-full flex-col justify-between p-4 bg-background-warm">

@@ -1,6 +1,7 @@
 import type { Gender, Product, ProductVariant } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import type { GenderFilter, ProductVariantView, ProductWithVariants } from "@/types";
+import { cacheLife, cacheTag } from "next/cache";
 
 export function variantLabel(size: string, bottleMl?: number) {
   if (size === "FULL_BOTTLE") {
@@ -12,16 +13,25 @@ export function variantLabel(size: string, bottleMl?: number) {
 }
 
 function toProductView(product: Product & { variants: ProductVariant[] }): ProductWithVariants {
-  const variants: ProductVariantView[] = product.variants.map((variant) => ({
-    id: variant.id,
-    size: variant.size,
-    label: variantLabel(variant.size, product.actualBottleMl),
-    priceBdt: variant.priceBdt,
-    stockQty: variant.stockQty,
-  }));
+  let priceFloor = Infinity;
+  let priceCeiling = -Infinity;
+  let hasStock = false;
 
-  const prices = variants.map((variant) => variant.priceBdt);
   const blobBase = process.env.BLOB || "";
+
+  const variants: ProductVariantView[] = product.variants.map((variant) => {
+    if (variant.priceBdt < priceFloor) priceFloor = variant.priceBdt;
+    if (variant.priceBdt > priceCeiling) priceCeiling = variant.priceBdt;
+    if (variant.stockQty > 0) hasStock = true;
+
+    return {
+      id: variant.id,
+      size: variant.size,
+      label: variantLabel(variant.size, product.actualBottleMl),
+      priceBdt: variant.priceBdt,
+      stockQty: variant.stockQty,
+    };
+  });
 
   return {
     id: product.id,
@@ -37,13 +47,17 @@ function toProductView(product: Product & { variants: ProductVariant[] }): Produ
     images: product.images.map((img) => img.startsWith("http") ? img : `${blobBase}${img}`),
     isActive: product.isActive,
     variants,
-    priceFloor: prices.length ? Math.min(...prices) : 0,
-    priceCeiling: prices.length ? Math.max(...prices) : 0,
-    hasStock: variants.some((variant) => variant.stockQty > 0),
+    priceFloor: variants.length ? priceFloor : 0,
+    priceCeiling: variants.length ? priceCeiling : 0,
+    hasStock,
   };
 }
 
 export async function getActiveProducts(gender: GenderFilter = "ALL", search?: string) {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("products");
+
   const products = await prisma.product.findMany({
     where: {
       isActive: true,
@@ -65,6 +79,10 @@ export async function getActiveProducts(gender: GenderFilter = "ALL", search?: s
 }
 
 export async function getFeaturedProducts(limit = 4) {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("products");
+
   const products = await prisma.product.findMany({
     where: { isActive: true },
     include: { variants: { orderBy: { size: "asc" } } },
@@ -76,6 +94,10 @@ export async function getFeaturedProducts(limit = 4) {
 }
 
 export async function getProductBySlug(slug: string) {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("products");
+
   const product = await prisma.product.findUnique({
     where: { slug },
     include: { variants: { orderBy: { size: "asc" } } },
@@ -89,6 +111,10 @@ export async function getProductBySlug(slug: string) {
 }
 
 export async function getCollectionStats() {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("products");
+
   const products = await getActiveProducts();
   const allVariants = products.flatMap((product) => product.variants);
 

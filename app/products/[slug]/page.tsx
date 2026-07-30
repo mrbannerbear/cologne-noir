@@ -40,8 +40,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const related = relatedProducts.filter((item: any) => item.slug !== slug).slice(0, 3);
+  const related = relatedProducts.filter((item: ProductWithVariants) => item.slug !== slug).slice(0, 3);
   const coverImage = product.images[0];
 
   return (

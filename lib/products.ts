@@ -116,6 +116,15 @@ export async function getCollectionStats() {
   };
 }
 
+export async function getProductSlugs() {
+  const products = await prisma.product.findMany({
+    where: { isActive: true },
+    select: { slug: true, updatedAt: true },
+    orderBy: { createdAt: "desc" },
+  });
+  return products;
+}
+
 export async function getRelatedProducts(slug: string, limit = 3) {
   const products = await prisma.product.findMany({
     where: { isActive: true, slug: { not: slug } },

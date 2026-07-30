@@ -32,9 +32,25 @@ const courierPrime = Courier_Prime({
 const grainOverlay = <div className="grain-overlay" aria-hidden="true" />;
 
 export const metadata: Metadata = {
-  title: "Cologne Noir",
+  metadataBase: new URL("https://colognenoir.com"),
+  title: {
+    default: "Cologne Noir",
+    template: "%s | Cologne Noir",
+  },
   description:
     "Perfume decants and full bottles from Chittagong. Browse the catalog, order COD, confirm by WhatsApp.",
+  openGraph: {
+    siteName: "Cologne Noir",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 function NavSkeleton() {

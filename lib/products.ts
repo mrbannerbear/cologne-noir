@@ -1,7 +1,6 @@
 import type { Gender, Product, ProductVariant } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import type { GenderFilter, ProductVariantView, ProductWithVariants } from "@/types";
-import { cacheLife, cacheTag } from "next/cache";
 
 export function variantLabel(size: string, bottleMl?: number) {
   if (size === "FULL_BOTTLE") {
@@ -54,10 +53,6 @@ function toProductView(product: Product & { variants: ProductVariant[] }): Produ
 }
 
 export async function getActiveProducts(gender: GenderFilter = "ALL", search?: string) {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag("products");
-
   const products = await prisma.product.findMany({
     where: {
       isActive: true,
@@ -79,10 +74,6 @@ export async function getActiveProducts(gender: GenderFilter = "ALL", search?: s
 }
 
 export async function getFeaturedProducts(limit = 4) {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag("products");
-
   const products = await prisma.product.findMany({
     where: { isActive: true },
     include: { variants: { orderBy: { size: "asc" } } },
@@ -94,10 +85,6 @@ export async function getFeaturedProducts(limit = 4) {
 }
 
 export async function getProductBySlug(slug: string) {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag("products");
-
   const product = await prisma.product.findUnique({
     where: { slug },
     include: { variants: { orderBy: { size: "asc" } } },
@@ -111,19 +98,33 @@ export async function getProductBySlug(slug: string) {
 }
 
 export async function getCollectionStats() {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag("products");
-
-  const products = await getActiveProducts();
-  const allVariants = products.flatMap((product) => product.variants);
+  const [productCount, variantStats] = await Promise.all([
+    prisma.product.count({ where: { isActive: true } }),
+    prisma.productVariant.aggregate({
+      _count: true,
+      _min: { priceBdt: true },
+      _max: { priceBdt: true },
+      where: { product: { isActive: true } },
+    }),
+  ]);
 
   return {
-    activeProducts: products.length,
-    variantCount: allVariants.length,
-    priceFloor: allVariants.length ? Math.min(...allVariants.map((variant) => variant.priceBdt)) : 0,
-    priceCeiling: allVariants.length ? Math.max(...allVariants.map((variant) => variant.priceBdt)) : 0,
+    activeProducts: productCount,
+    variantCount: variantStats._count,
+    priceFloor: variantStats._min.priceBdt ?? 0,
+    priceCeiling: variantStats._max.priceBdt ?? 0,
   };
+}
+
+export async function getRelatedProducts(slug: string, limit = 3) {
+  const products = await prisma.product.findMany({
+    where: { isActive: true, slug: { not: slug } },
+    include: { variants: { orderBy: { size: "asc" } } },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+  });
+
+  return products.map(toProductView);
 }
 
 export function genderLabel(gender: Gender) {

@@ -9,8 +9,6 @@ import { formatBdt } from "@/lib/format";
 import { genderLabel, getActiveProducts, getProductBySlug } from "@/lib/products";
 import type { ProductWithVariants } from "@/types";
 
-export const dynamic = "force-dynamic";
-
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
 };

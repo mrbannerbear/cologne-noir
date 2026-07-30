@@ -5,8 +5,6 @@ import { ShopAllLink } from "@/components/catalog-filters";
 import { FadeIn } from "@/components/fade-in";
 import { getCollectionStats, getFeaturedProducts } from "@/lib/products";
 
-export const dynamic = "force-dynamic";
-
 export default async function Home() {
   const [featuredProducts, stats] = await Promise.all([
     getFeaturedProducts(4),

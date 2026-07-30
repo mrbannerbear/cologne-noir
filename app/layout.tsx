@@ -27,6 +27,8 @@ const courierPrime = Courier_Prime({
   display: "swap",
 });
 
+const grainOverlay = <div className="grain-overlay" aria-hidden="true" />;
+
 export const metadata: Metadata = {
   title: "Cologne Noir",
   description:
@@ -66,8 +68,7 @@ export default function RootLayout({
         suppressHydrationWarning 
         className="min-h-full flex flex-col relative bg-background text-foreground"
       >
-        {/* Grain overlay for desaturated film look */}
-        <div className="grain-overlay" aria-hidden="true" />
+        {grainOverlay}
         
         <Suspense fallback={<NavSkeleton />}>
           <NavBar />

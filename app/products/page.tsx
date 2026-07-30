@@ -5,8 +5,6 @@ import { ProductGrid } from "@/components/product-grid";
 import { getActiveProducts } from "@/lib/products";
 import type { GenderFilter } from "@/types";
 
-export const dynamic = "force-dynamic";
-
 type ProductsPageProps = {
   searchParams: Promise<{ gender?: string; q?: string }>;
 };

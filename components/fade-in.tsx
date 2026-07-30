@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { motion } from "framer-motion";
 
 const pressuredEasing: [number, number, number, number] = [0.4, 0, 0.6, 1];
@@ -10,7 +11,7 @@ type FadeInProps = {
   delay?: number;
 };
 
-export function FadeIn({ children, className, delay = 0 }: FadeInProps) {
+export const FadeIn = memo(function FadeIn({ children, className, delay = 0 }: FadeInProps) {
   return (
     <motion.div
       className={className}
@@ -25,4 +26,4 @@ export function FadeIn({ children, className, delay = 0 }: FadeInProps) {
       {children}
     </motion.div>
   );
-}
+});

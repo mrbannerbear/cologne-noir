@@ -82,7 +82,7 @@ export default function RootLayout({
     >
       <body 
         suppressHydrationWarning 
-        className="min-h-full flex flex-col relative bg-background text-foreground"
+        className="min-h-svh flex flex-col relative bg-background text-foreground"
       >
         {grainOverlay}
         

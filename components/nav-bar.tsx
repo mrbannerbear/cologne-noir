@@ -38,15 +38,12 @@ export function NavBar() {
         </nav>
 
         {/* Center Column: Monogram Brand Logo (Desktop & Mobile) */}
-        <div className="flex md:flex-1 justify-start md:justify-center">
+        <div className="flex flex-1 justify-center">
           <Link href="/" className="flex items-center gap-3 group" onClick={() => setOpen(false)}>
             <div className="font-display text-3xl tracking-widest font-normal select-none flex items-baseline">
               {/* C<span className="italic text-muted font-normal text-2xl -ml-0.5">N</span> */}
-              <Image src={"/logo.jpg"} height={16} width={16} alt="logo" />
+              <Image src={"/logo-clear.png"} height={40} width={140} alt="logo" className="w-24 md:w-30 lg:w-35" />
             </div>
-            <span className="label-caps text-[0.6rem] text-muted tracking-[0.25em] font-medium border-l border-border pl-3 transition-colors group-hover:text-foreground">
-              Cologne Noir
-            </span>
           </Link>
         </div>
 

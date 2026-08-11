@@ -1,6 +1,6 @@
 export function Loader() {
   return (
-    <div className="mx-auto flex w-full max-w-360 items-center justify-center px-4 py-24 sm:px-6 lg:px-8">
+    <div className="flex w-full flex-1 flex-col items-center justify-center px-4" role="status" aria-live="polite">
       <div className="flex flex-col items-center gap-6">
         <span className="text-[10px] label-caps text-muted tracking-[0.3em]">
           Loading

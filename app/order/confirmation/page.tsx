@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { FadeIn } from "@/components/fade-in";
 import { buttonVariants } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
@@ -7,24 +8,75 @@ type OrderConfirmationProps = {
   searchParams: Promise<{ orderNumber?: string }>;
 };
 
-export default async function OrderConfirmationPage({ searchParams }: OrderConfirmationProps) {
-  const { orderNumber } = await searchParams;
-  
-  let order = null;
-  if (orderNumber) {
-    order = await prisma.order.findUnique({
-      where: { orderNumber },
-      include: { items: true },
-    });
+function Receipt({ orderNumber }: { orderNumber?: string }) {
+  return (
+    <div className="border border-border/80 bg-background p-6 font-mono text-xs text-left max-w-md mx-auto space-y-4">
+      <div className="flex justify-between border-b border-border/50 pb-2 label-caps text-[10px] text-muted">
+        <span>Receipt Details</span>
+        <span>Invoice</span>
+      </div>
+      <div className="space-y-2">
+        <div className="flex justify-between">
+          <span className="text-muted">Order Reference:</span>
+          <span className="text-foreground font-semibold">{orderNumber ?? "……"}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-muted">Fulfillment:</span>
+          <span className="text-foreground">Manual verification</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-muted">Status:</span>
+          <span className="text-foreground font-semibold">Pending confirmation</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-muted">Payment Method:</span>
+          <span className="text-foreground">Cash on Delivery (COD)</span>
+        </div>
+      </div>
+      <div className="border-t border-border/50 pt-2 text-[10px] text-muted leading-relaxed text-center">
+        Please keep your phone active. A Cologne Noir representative will contact you via SMS, Phone, or WhatsApp to confirm your shipping details.
+      </div>
+    </div>
+  );
+}
+
+async function OrderReceipt({ orderNumber }: { orderNumber?: string }) {
+  if (!orderNumber) {
+    return (
+      <div className="p-6 border border-border bg-background text-muted text-sm font-mono">
+        Invalid or missing order reference.
+      </div>
+    );
+  }
+
+  const order = await prisma.order.findUnique({
+    where: { orderNumber },
+    include: { items: true },
+  });
+
+  if (!order) {
+    return (
+      <div className="p-6 border border-border bg-background text-muted text-sm font-mono">
+        Invalid or missing order reference.
+      </div>
+    );
   }
 
   return (
+    <Receipt orderNumber={order.orderNumber} />
+  );
+}
+
+export default async function OrderConfirmationPage({ searchParams }: OrderConfirmationProps) {
+  const { orderNumber } = await searchParams;
+
+  return (
     <div className="mx-auto flex w-full max-w-2xl items-center px-4 py-12 sm:px-6 lg:px-8 lg:py-20">
-      
+
       {/* Receipt Container */}
       <FadeIn>
       <section className="w-full border border-border bg-background-warm p-6 sm:p-12 text-center space-y-8">
-        
+
         <div className="space-y-4">
           <span className="mx-auto inline-block h-2.5 w-2.5 bg-foreground/60" />
           <p className="label-caps text-xs text-muted">Order Intake Successful</p>
@@ -34,41 +86,9 @@ export default async function OrderConfirmationPage({ searchParams }: OrderConfi
         </div>
 
         {/* Print Receipt Section */}
-        {order ? (
-          <div className="space-y-6">
-            <div className="border border-border/80 bg-background p-6 font-mono text-xs text-left max-w-md mx-auto space-y-4">
-              <div className="flex justify-between border-b border-border/50 pb-2 label-caps text-[10px] text-muted">
-                <span>Receipt Details</span>
-                <span>Invoice</span>
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-muted">Order Reference:</span>
-                  <span className="text-foreground font-semibold">{order.orderNumber}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted">Fulfillment:</span>
-                  <span className="text-foreground">Manual verification</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted">Status:</span>
-                  <span className="text-foreground font-semibold">Pending confirmation</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted">Payment Method:</span>
-                  <span className="text-foreground">Cash on Delivery (COD)</span>
-                </div>
-              </div>
-              <div className="border-t border-border/50 pt-2 text-[10px] text-muted leading-relaxed text-center">
-                Please keep your phone active. A Cologne Noir representative will contact you via SMS, Phone, or WhatsApp to confirm your shipping details.
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="p-6 border border-border bg-background text-muted text-sm font-mono">
-            Invalid or missing order reference.
-          </div>
-        )}
+        <Suspense fallback={<Receipt />}>
+          <OrderReceipt orderNumber={orderNumber} />
+        </Suspense>
 
         <p className="mx-auto max-w-md text-xs leading-relaxed text-muted font-sans">
           Your order will not be processed or shipped until a representative has verified the request. Thank you for shopping with Cologne Noir.

@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { GenderFilterBar, SearchBar } from "@/components/catalog-filters";
 import { FadeIn } from "@/components/fade-in";
 import { ProductGrid } from "@/components/product-grid";
+import { ProductGridSkeleton } from "@/components/product-grid-skeleton";
 import { getActiveProducts } from "@/lib/products";
 import type { Metadata } from "next";
 import type { GenderFilter } from "@/types";
@@ -26,10 +27,18 @@ function parseGender(value?: string): GenderFilter {
   return "ALL";
 }
 
-export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  const { gender, q } = await searchParams;
+async function ProductResults({ gender, q }: { gender?: string; q?: string }) {
   const filter = parseGender(gender);
   const products = await getActiveProducts(filter, q);
+  return (
+    <FadeIn>
+      <ProductGrid products={products} />
+    </FadeIn>
+  );
+}
+
+export default async function ProductsPage({ searchParams }: ProductsPageProps) {
+  const { gender, q } = await searchParams;
 
   return (
     <div className="mx-auto w-full max-w-360 px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
@@ -55,9 +64,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       </div>
 
       <div className="mt-8">
-        <FadeIn>
-          <ProductGrid products={products} />
-        </FadeIn>
+        <Suspense fallback={<ProductGridSkeleton count={8} />}>
+          <ProductResults gender={gender} q={q} />
+        </Suspense>
       </div>
     </div>
   );

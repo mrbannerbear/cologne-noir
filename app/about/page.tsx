@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { buttonVariants } from "@/components/ui/button";
 
 export default function AboutPage() {
   const fadeUp = {
@@ -124,13 +125,13 @@ export default function AboutPage() {
         <section className="flex flex-col gap-3 sm:flex-row pt-4 justify-start">
           <Link
             href="/products"
-            className="inline-flex items-center justify-center border border-ink bg-ink text-white px-6 py-3 text-xs label-caps hover:bg-white hover:text-ink transition-colors duration-300"
+            className={buttonVariants({ variant: "primary" })}
           >
             Browse Products
           </Link>
           <Link
             href="/"
-            className="inline-flex items-center justify-center border border-border px-6 py-3 text-xs label-caps text-muted hover:border-foreground hover:text-foreground transition-all duration-300"
+            className={buttonVariants({ variant: "outline" })}
           >
             Back to Home
           </Link>

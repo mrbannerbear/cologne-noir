@@ -37,6 +37,10 @@ export const metadata: Metadata = {
     default: "Cologne Noir",
     template: "%s | Cologne Noir",
   },
+  icons: [
+    { rel: "icon", url: "/favicon.ico" },
+    { rel: "manifest", url: "/site.webmanifest" },
+  ],
   description:
     "Perfume decants and full bottles from Chittagong. Browse the catalog, order COD, confirm by WhatsApp.",
   openGraph: {
@@ -56,11 +60,11 @@ export const metadata: Metadata = {
 function NavSkeleton() {
   return (
     <header className="border-b border-border bg-background">
-      <div className="mx-auto flex w-full max-w-360xl items-center justify-between px-4 py-6 sm:px-6 lg:px-8">
-        <div className="hidden md:flex flex-1 items-center gap-6" />
-        <div className="flex md:flex-1 justify-start md:justify-center" />
-        <div className="hidden md:flex flex-1 items-center justify-end gap-6" />
-        <div className="md:hidden h-8 w-16 border border-border bg-background-warm" />
+      <div className="mx-auto flex w-full max-w-360 items-center justify-between px-4 py-6 sm:px-6 lg:px-8">
+        <div className="hidden lg:flex flex-1 items-center gap-6" />
+        <div className="flex lg:flex-1 justify-start lg:justify-center" />
+        <div className="hidden lg:flex flex-1 items-center justify-end gap-6" />
+        <div className="lg:hidden h-10 w-10 border border-border bg-background-warm" />
       </div>
     </header>
   );
@@ -84,7 +88,7 @@ export default function RootLayout({
     >
       <body 
         suppressHydrationWarning 
-        className="min-h-full flex flex-col relative bg-background text-foreground"
+        className="min-h-svh flex flex-col relative bg-background text-foreground"
       >
         {grainOverlay}
         

@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { FadeIn } from "@/components/fade-in";
 import { NotesPyramid } from "@/components/notes-pyramid";
 import { ProductPurchase } from "@/components/product-purchase";
@@ -51,6 +52,63 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
+
+  return (
+    <div className="mx-auto w-full max-w-360 px-4 py-8 sm:px-6 lg:px-8 lg:py-12 space-y-8">
+
+      {/* Back button — static, paints first */}
+      <div>
+        <Link
+          href="/products"
+          className="inline-flex items-center gap-1.5 text-xs label-caps text-muted hover:text-foreground transition-colors editorial-link"
+        >
+          <span aria-hidden="true">←</span>
+          Back to catalog
+        </Link>
+      </div>
+
+      {/* Split-Screen Product Frame */}
+      <Suspense fallback={<ProductDetailSkeleton />}>
+        <ProductContent slug={slug} />
+      </Suspense>
+
+    </div>
+  );
+}
+
+function ProductDetailSkeleton() {
+  return (
+    <div aria-hidden="true">
+      <section className="grid overflow-hidden border border-border lg:grid-cols-2">
+        <div className="aspect-[4/5] lg:aspect-auto bg-background-warm border-b border-border lg:border-b-0 lg:border-r" />
+        <div className="flex flex-col gap-8 bg-background-warm p-6 sm:p-10 lg:p-12">
+          <div className="space-y-4">
+            <div className="flex justify-between items-baseline gap-2 border-b border-border/80 pb-4">
+              <div className="space-y-2">
+                <div className="h-2 w-16 bg-border/60" />
+                <div className="h-5 w-40 bg-border/60" />
+              </div>
+              <div className="h-3 w-20 bg-border/60" />
+            </div>
+            <div className="space-y-2 border-b border-border/80 pb-4">
+              <div className="h-2.5 w-full bg-border/60" />
+              <div className="h-2.5 w-2/3 bg-border/60" />
+            </div>
+            <div className="space-y-3 pt-2">
+              <div className="h-2 w-8 bg-border/60" />
+              <div className="h-2.5 w-1/2 bg-border/60" />
+            </div>
+          </div>
+          <div className="pt-4">
+            <div className="h-40 border border-border bg-background/60" />
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+async function ProductContent({ slug }: { slug: string }) {
   const [product, related] = await Promise.all([
     getProductBySlug(slug),
     getRelatedProducts(slug, 3),
@@ -68,34 +126,55 @@ export default async function ProductPage({ params }: ProductPageProps) {
     description: product.description ?? `${product.brand} ${product.name} — decants and full bottles.`,
     brand: { "@type": "Brand", name: product.brand },
     category: product.gender,
+    url: `https://colognenoir.com/products/${product.slug}`,
     offers: product.variants.map((variant) => ({
       "@type": "Offer",
       price: variant.priceBdt,
       priceCurrency: "BDT",
+      priceValidUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(),
       availability: variant.stockQty > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       itemCondition: "https://schema.org/NewCondition",
     })),
     image: coverImage ? [coverImage] : [],
   };
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://colognenoir.com",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Catalog",
+        item: "https://colognenoir.com/products",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: `${product.brand} ${product.name}`,
+        item: `https://colognenoir.com/products/${product.slug}`,
+      },
+    ],
+  };
+
   return (
-    <div className="mx-auto w-full max-w-360xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12 space-y-8">
+    <section className="space-y-8">
       
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
       />
 
-      {/* Back button */}
-      <div>
-        <Link
-          href="/products"
-          className="inline-flex items-center gap-1.5 text-xs label-caps text-muted hover:text-foreground transition-colors editorial-link"
-        >
-          <span aria-hidden="true">←</span>
-          Back to catalog
-        </Link>
-      </div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
 
       {/* Split-Screen Product Frame */}
       <FadeIn>
@@ -198,6 +277,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </FadeIn>
       ) : null}
 
-    </div>
+    </section>
   );
 }

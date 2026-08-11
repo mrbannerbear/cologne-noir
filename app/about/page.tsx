@@ -24,6 +24,9 @@ export default function AboutPage() {
           <p className="max-w-2xl text-sm leading-relaxed text-muted font-sans pt-2">
             Cologne Noir is an Instagram-first perfume business based in Chittagong. This storefront replaces back-and-forth messaging with a clear catalog — but fulfillment stays personal. Every order is verified by phone or WhatsApp before anything ships.
           </p>
+          <p className="max-w-2xl text-sm leading-relaxed text-muted font-sans">
+            Cologne Noir was started by four friends who love perfumes, based in Chittagong — what began as a hobby is now a growing storefront.
+          </p>
         </section>
 
         {/* Postcard Panel - Storytelling section with vertical hairline divider */}
@@ -37,7 +40,7 @@ export default function AboutPage() {
                 Authenticity Above All
               </h2>
               <p className="text-xs leading-relaxed text-muted font-sans">
-                Authenticity is non-negotiable in decanting. We source our bottles exclusively from authorized retailers and trusted distributors. Every variant page displays the original bottle economics so you know the direct pricing logic behind each custom volume.
+                Authenticity is non-negotiable in decanting. We source directly from a trusted international supplier with direct access to authentic retail stock, so every bottle is genuine before decanting. Every variant page displays the original bottle economics so you know the direct pricing logic behind each custom volume.
               </p>
               <div className="h-px bg-border/60" />
               <div className="space-y-2 text-xs font-mono text-muted">
@@ -61,11 +64,11 @@ export default function AboutPage() {
                 <div className="grid grid-cols-2 gap-4 border border-border/80 bg-background p-4 text-[11px]">
                   <div>
                     <p className="label-caps text-[8px] text-muted">Chittagong</p>
-                    <p className="font-display font-medium text-foreground mt-0.5">1 – 2 Days</p>
+                    <p className="font-display font-medium text-foreground mt-0.5">Within 3 days</p>
                   </div>
                   <div>
                     <p className="label-caps text-[8px] text-muted">Other Cities</p>
-                    <p className="font-display font-medium text-foreground mt-0.5">2 – 5 Days</p>
+                    <p className="font-display font-medium text-foreground mt-0.5">Within a week</p>
                   </div>
                 </div>
               </div>

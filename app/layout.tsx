@@ -4,6 +4,7 @@ import { Bodoni_Moda, Inter, Courier_Prime } from "next/font/google";
 import "./globals.css";
 import { Footer } from "@/components/footer";
 import { NavBar } from "@/components/nav-bar";
+import { ScrollToTop } from "@/components/scroll-to-top";
 import { cn } from "@/lib/utils";
 
 const bodoniModa = Bodoni_Moda({
@@ -35,10 +36,10 @@ export const metadata: Metadata = {
     default: "Cologne Noir",
     template: "%s | Cologne Noir",
   },
-  icons: [
-    { rel: "icon", url: "/favicon.ico" },
-    { rel: "manifest", url: "/site.webmanifest" },
-  ],
+  // icons: [
+  //   { rel: "icon", url: "/favicon.ico" },
+  //   { rel: "manifest", url: "/site.webmanifest" },
+  // ],
   description:
     "Perfume decants and full bottles, Bangladesh-based. Browse the catalog, order COD, confirm by WhatsApp.",
   openGraph: {
@@ -89,7 +90,8 @@ export default function RootLayout({
         className="min-h-svh flex flex-col relative bg-background text-foreground"
       >
         {grainOverlay}
-        
+        <ScrollToTop />
+
         <Suspense fallback={<NavSkeleton />}>
           <NavBar />
         </Suspense>

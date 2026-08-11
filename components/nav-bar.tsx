@@ -11,6 +11,7 @@ import { MenuToggle } from "@/components/menu-toggle";
 const links = [
   { href: "/products", label: "Catalog" },
   { href: "/about", label: "About Us" },
+  { href: "/faq", label: "FAQ" },
 ];
 
 export function NavBar() {

@@ -10,10 +10,8 @@ export function Footer() {
           {/* Brand Column */}
           <div className="space-y-4">
             <div className="font-display text-2xl tracking-widest font-normal flex items-baseline">
-              C
-              <span className="italic text-muted font-normal text-xl -ml-0.5">
-                N
-              </span>
+              <span className="italic">Cologne</span>
+              <span className="font-light pl-1">Noir</span>
             </div>
             <p className="text-xs leading-relaxed text-muted max-w-xs">
               A boutique storefront presenting hand-selected decants and full
@@ -44,6 +42,14 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link
+                  href="/faq"
+                  className="hover:text-foreground transition-colors"
+                >
+                  FAQ
+                </Link>
+              </li>
+              <li>
                 <a
                   href="https://instagram.com/cologne.noir"
                   target="_blank"
@@ -63,20 +69,49 @@ export function Footer() {
             </h4>
             <ul className="space-y-2 text-xs text-muted">
               <li>Cash on Delivery (COD)</li>
-              <li>Chittagong: 1–2 Business Days</li>
-              <li>Nationwide: 2–5 Business Days</li>
+              <li>Chittagong: within 3 days</li>
+              <li>Nationwide: within a week</li>
             </ul>
           </div>
 
-          {/* Small Print disclaimer */}
+          {/* Contact / EEAT trust signals */}
           <div className="space-y-3">
             <h4 className="label-caps text-xs text-foreground font-semibold">
-              Inquiries
+              Contact
             </h4>
-            <p className="text-xs leading-relaxed text-muted">
-              Have questions about sizing, concentrations, or decanting? Reach
-              out to us directly via Instagram DMs or phone verification.
-            </p>
+            <ul className="space-y-2 text-xs text-muted">
+              <li>
+                <a
+                  href="https://wa.me/8801319060664"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-foreground transition-colors"
+                >
+                  WhatsApp / Phone: +880 1319-060664
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://instagram.com/cologne.noir"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-foreground transition-colors"
+                >
+                  Instagram: @cologne.noir
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://facebook.com/colognenoir01"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-foreground transition-colors"
+                >
+                  Facebook: Cologne Noir
+                </a>
+              </li>
+              <li>Based in Chattogram, Bangladesh</li>
+            </ul>
           </div>
         </div>
 

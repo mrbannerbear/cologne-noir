@@ -8,6 +8,8 @@ import { FadeIn } from "@/components/fade-in";
 import { HeroImage } from "@/components/hero-image";
 import type { Metadata } from "next";
 import { getCollectionStats, getFeaturedProducts } from "@/lib/products";
+import { faqPreview } from "@/lib/faq";
+import { FAQPreview } from "@/components/faq-preview";
 
 export const dynamic = "force-dynamic";
 
@@ -29,9 +31,9 @@ const graphSchema = {
       "@type": "Organization",
       name: "Cologne Noir",
       url: "https://colognenoir.com",
-      logo: "https://colognenoir.com/logo-clear.png",
+      logo: "https://colognenoir.com/logo-clear1.png",
       description:
-        "Perfume decants and full bottles from Chittagong. Browse the catalog, order COD, confirm by WhatsApp.",
+        "Perfume decants and full bottles, Bangladesh-based. Browse the catalog, order COD, confirm by WhatsApp.",
       foundingDate: "2024",
       areaServed: "BD",
       sameAs: ["https://www.instagram.com/cologne.noir"],
@@ -137,7 +139,7 @@ export default function Home() {
           <div className="space-y-6">
             <div className="inline-flex items-center gap-2 border border-border px-3 py-1 text-[10px] label-caps text-muted bg-background">
               <span className="h-1.5 w-1.5 rounded-full bg-foreground/60" />
-              Chittagong · COD · verified
+              Bangladesh · COD · verified
             </div>
 
             <div className="space-y-4">
@@ -207,6 +209,27 @@ export default function Home() {
         <Suspense fallback={<ProductGridSkeleton />}>
           <FeaturedGrid />
         </Suspense>
+      </section>
+
+      {/* FAQ Preview — common questions, editorial */}
+      <section className="space-y-4 pt-4">
+        <div className="flex items-end justify-between pb-4">
+          <div>
+            <p className="label-caps text-xs text-muted">Before You Order</p>
+            <h2 className="mt-1 font-display text-3xl font-light text-foreground">
+              Common Questions
+            </h2>
+          </div>
+          <Link
+            href="/faq"
+            className="label-caps text-xs text-muted hover:text-foreground transition-colors editorial-link"
+          >
+            Full FAQ →
+          </Link>
+        </div>
+        <div className="border-t border-border">
+          <FAQPreview items={faqPreview} />
+        </div>
       </section>
 
     </div>

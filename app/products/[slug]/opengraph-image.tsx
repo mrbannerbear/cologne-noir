@@ -6,7 +6,7 @@ export const contentType = "image/png";
 
 export const dynamic = "force-dynamic";
 
-export const alt = "Cologne Noir product — decants and full bottles. Chittagong · COD · verified";type OgImageProps = {
+export const alt = "Cologne Noir product — decants and full bottles. Banglaesh · COD · verified";type OgImageProps = {
   params: Promise<{ slug: string }>;
 };
 

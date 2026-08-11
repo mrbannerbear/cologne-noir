@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { ChangeEvent } from "react";
 import type { Gender } from "@prisma/client";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 
@@ -36,7 +37,7 @@ export function SearchBar() {
         value={query}
         onChange={(e: ChangeEvent<HTMLInputElement>) => handleSearch(e.target.value)}
         placeholder="Search brand or perfume..."
-        className="w-full bg-transparent border border-border rounded-[2px] px-4 py-2 text-sm text-foreground outline-none focus:border-ink transition-all duration-300 placeholder:text-muted/50"
+        className="w-full bg-transparent border border-border rounded-[2px] px-4 py-2 text-sm text-foreground outline-none focus:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors duration-300 placeholder:text-muted/50"
       />
       <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
         <span className="text-[10px] label-caps text-muted opacity-50">Search</span>
@@ -70,8 +71,9 @@ export function GenderFilterBar() {
             key={filter.value}
             type="button"
             onClick={() => setFilter(filter.value)}
+            aria-pressed={isSelected}
             className={cn(
-              "rounded-[2px] border px-4 py-2 text-xs label-caps transition-all duration-300",
+              "rounded-[2px] border px-4 py-2 text-xs label-caps transition-colors duration-300 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
               isSelected
                 ? "border-ink bg-ink text-white font-medium"
                 : "border-border bg-transparent text-muted hover:border-foreground hover:text-foreground"
@@ -89,7 +91,7 @@ export function ShopAllLink() {
   return (
     <Link
       href="/products"
-      className="inline-flex items-center justify-center border border-ink bg-ink text-white px-5 py-2.5 text-xs label-caps hover:bg-white hover:text-ink transition-colors duration-300"
+      className={buttonVariants({ variant: "primary" })}
     >
       Shop All
       <span aria-hidden="true" className="ml-1.5">→</span>

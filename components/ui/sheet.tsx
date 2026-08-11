@@ -1,17 +1,20 @@
 "use client";
 
 import { AnimatePresence, motion, PanInfo } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useId, useRef } from "react";
 import { cn } from "@/lib/utils";
 
-type GlassSheetProps = {
+type SheetProps = {
   open: boolean;
   onClose: () => void;
   title: string;
   children: React.ReactNode;
 };
 
-export function GlassSheet({ open, onClose, title, children }: GlassSheetProps) {
+export function Sheet({ open, onClose, title, children }: SheetProps) {
+  const titleId = useId();
+  const panelRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!open) return;
 
@@ -25,9 +28,14 @@ export function GlassSheet({ open, onClose, title, children }: GlassSheetProps) 
     }
 
     window.addEventListener("keydown", onKeyDown);
+
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    panelRef.current?.focus();
+
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKeyDown);
+      previouslyFocused?.focus();
     };
   }, [open, onClose]);
 
@@ -48,9 +56,11 @@ export function GlassSheet({ open, onClose, title, children }: GlassSheetProps) 
       {open ? (
         <motion.div
           key="sheet"
+          ref={panelRef}
           role="dialog"
           aria-modal="true"
-          aria-label={title}
+          aria-labelledby={titleId}
+          tabIndex={-1}
           drag="y"
           dragConstraints={{ top: 0, bottom: 0 }}
           dragElastic={0.06}
@@ -64,7 +74,7 @@ export function GlassSheet({ open, onClose, title, children }: GlassSheetProps) 
           exit={{ y: "100%", opacity: 0.9 }}
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
           className={cn(
-            "fixed z-50 max-h-[90vh] overflow-y-auto bg-background-warm border-t border-border",
+            "fixed z-50 max-h-[90vh] overflow-y-auto bg-background-warm border-t border-border outline-none",
             "inset-x-0 bottom-0 rounded-t-[1rem] p-5 pb-8 shadow-2xl",
             "md:inset-auto md:top-1/2 md:left-1/2 md:w-full md:max-w-lg md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[2px] md:border md:shadow-lg",
           )}
@@ -73,12 +83,12 @@ export function GlassSheet({ open, onClose, title, children }: GlassSheetProps) 
           <div className="mb-5 flex items-center justify-between gap-4 border-b border-border pb-4">
             <div>
               <p className="label-caps text-[9px] text-muted">Intake Form</p>
-              <h2 className="mt-1 font-display text-xl font-light text-foreground">{title}</h2>
+              <h2 id={titleId} className="mt-1 font-display text-xl font-light text-foreground">{title}</h2>
             </div>
             <button
               type="button"
               onClick={onClose}
-              className="rounded-[2px] border border-border bg-background px-3 py-1.5 text-[10px] label-caps text-muted hover:border-foreground hover:text-foreground transition-all duration-300"
+              className="rounded-[2px] border border-border bg-background px-3 py-1.5 text-[10px] label-caps text-muted hover:border-foreground hover:text-foreground transition-colors duration-300 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
             >
               Close
             </button>

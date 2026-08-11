@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import { submitOrder } from "@/lib/actions";
 import { formatBdt } from "@/lib/format";
 import type { ProductWithVariants } from "@/types";
-import { GlassSheet } from "@/components/ui/glass-sheet";
+import { Sheet } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 import { VariantSelector } from "@/components/variant-selector";
 import type { VariantSelection } from "@/types";
 import { cn } from "@/lib/utils";
@@ -133,22 +134,22 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
             </div>
           </div>
           
-          <button
+          <Button
             type="button"
             disabled={!canOpenSheet}
             onClick={() => setSheetOpen(true)}
             className={cn(
-              "inline-flex items-center justify-center border border-ink bg-ink text-white px-6 py-3 text-xs label-caps hover:bg-white hover:text-ink transition-colors duration-300 font-medium rounded-[2px] min-w-[10rem] h-[40px]",
-              !canOpenSheet && "opacity-55 cursor-not-allowed"
+              "min-w-[10rem] h-[40px]",
+              !canOpenSheet && "cursor-not-allowed"
             )}
           >
             Order Now
-          </button>
+          </Button>
         </div>
         
       </div>
 
-      <GlassSheet
+      <Sheet
         open={sheetOpen}
         onClose={() => setSheetOpen(false)}
         title={`${product.brand} ${product.name}`}
@@ -223,23 +224,20 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
           </div>
 
           {/* Solid Ink Submit Button */}
-          <button
+          <Button
             type="submit"
             disabled={isSubmitting || !canSubmit}
-            className={cn(
-              "w-full inline-flex items-center justify-center border border-ink bg-ink text-white px-5 py-3.5 text-xs label-caps hover:bg-white hover:text-ink transition-colors duration-300 font-semibold rounded-[2px]",
-              (isSubmitting || !canSubmit) && "opacity-55 cursor-not-allowed"
-            )}
+            className={cn("w-full", (isSubmitting || !canSubmit) && "cursor-not-allowed")}
           >
             {isSubmitting ? "Placing Order..." : `Confirm Order · ${formatBdt(total)}`}
-          </button>
+          </Button>
 
           {errorMessage ? (
             <p className="text-xs font-mono text-muted text-center pt-2">{errorMessage}</p>
           ) : null}
           
         </form>
-      </GlassSheet>
+      </Sheet>
     </>
   );
 }

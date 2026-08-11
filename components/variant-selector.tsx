@@ -82,7 +82,7 @@ export function VariantSelector({ product, selection, onChange }: VariantSelecto
               disabled={soldOut}
               onClick={() => selectPreset(variant)}
               className={cn(
-                "rounded-[2px] border p-3 text-left transition-all duration-300",
+                "rounded-[2px] border p-3 text-left transition-colors duration-300 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
                 isSelected
                   ? "border-ink bg-ink text-white font-medium"
                   : "border-border bg-transparent text-foreground hover:border-foreground",
@@ -104,7 +104,7 @@ export function VariantSelector({ product, selection, onChange }: VariantSelecto
           type="button"
           onClick={selectCustom}
           className={cn(
-            "rounded-[2px] border p-3 text-left transition-all duration-300",
+            "rounded-[2px] border p-3 text-left transition-colors duration-300 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
             selection.mode === "custom"
               ? "border-ink bg-ink text-white font-medium"
               : "border-border bg-transparent text-foreground hover:border-foreground"

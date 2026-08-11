@@ -10,9 +10,27 @@ import type { GenderFilter } from "@/types";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Catalog",
+  title: "Catalog — Perfume Decants & Full Bottles",
   description:
     "Browse our full catalog of authentic perfume decants and full bottles. Filter by gender or search by brand and name.",
+  alternates: {
+    canonical: "https://colognenoir.com/products",
+  },
+  openGraph: {
+    title: "Catalog — Perfume Decants & Full Bottles",
+    description:
+      "Browse authentic perfume decants and full bottles from Cologne Noir. Filter by gender or search by brand and name.",
+    url: "https://colognenoir.com/products",
+    siteName: "Cologne Noir",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Catalog — Perfume Decants & Full Bottles",
+    description:
+      "Browse authentic perfume decants and full bottles from Cologne Noir. Cash on delivery across Bangladesh.",
+  },
 };
 
 type ProductsPageProps = {

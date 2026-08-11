@@ -1,11 +1,20 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import { FadeIn } from "@/components/fade-in";
 import { buttonVariants } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
 
 type OrderConfirmationProps = {
   searchParams: Promise<{ orderNumber?: string }>;
+};
+
+export const metadata: Metadata = {
+  title: "Order Confirmation",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 function Receipt({ orderNumber }: { orderNumber?: string }) {

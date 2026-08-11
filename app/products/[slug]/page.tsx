@@ -126,14 +126,41 @@ async function ProductContent({ slug }: { slug: string }) {
     description: product.description ?? `${product.brand} ${product.name} — decants and full bottles.`,
     brand: { "@type": "Brand", name: product.brand },
     category: product.gender,
+    url: `https://colognenoir.com/products/${product.slug}`,
     offers: product.variants.map((variant) => ({
       "@type": "Offer",
       price: variant.priceBdt,
       priceCurrency: "BDT",
+      priceValidUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(),
       availability: variant.stockQty > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       itemCondition: "https://schema.org/NewCondition",
     })),
     image: coverImage ? [coverImage] : [],
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://colognenoir.com",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Catalog",
+        item: "https://colognenoir.com/products",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: `${product.brand} ${product.name}`,
+        item: `https://colognenoir.com/products/${product.slug}`,
+      },
+    ],
   };
 
   return (
@@ -142,6 +169,11 @@ async function ProductContent({ slug }: { slug: string }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
       {/* Split-Screen Product Frame */}

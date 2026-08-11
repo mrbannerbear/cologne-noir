@@ -22,20 +22,39 @@ export const metadata: Metadata = {
   },
 };
 
-const organizationSchema = {
+const graphSchema = {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "Cologne Noir",
-  url: "https://colognenoir.com",
-  description:
-    "Perfume decants and full bottles from Chittagong. Browse the catalog, order COD, confirm by WhatsApp.",
-  foundingDate: "2024",
-  areaServed: "BD",
-  contactPoint: {
-    "@type": "ContactPoint",
-    contactType: "customer service",
-    availableLanguage: ["Bengali", "English"],
-  },
+  "@graph": [
+    {
+      "@type": "Organization",
+      name: "Cologne Noir",
+      url: "https://colognenoir.com",
+      logo: "https://colognenoir.com/logo-clear.png",
+      description:
+        "Perfume decants and full bottles from Chittagong. Browse the catalog, order COD, confirm by WhatsApp.",
+      foundingDate: "2024",
+      areaServed: "BD",
+      sameAs: ["https://www.instagram.com/cologne.noir"],
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "customer service",
+        availableLanguage: ["Bengali", "English"],
+      },
+    },
+    {
+      "@type": "WebSite",
+      name: "Cologne Noir",
+      url: "https://colognenoir.com",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: "https://colognenoir.com/products?q={search_term_string}",
+        },
+        "query-input": "required name=search_term_string",
+      },
+    },
+  ],
 };
 
 /* The editorial wordmark used both as the no-image fallback and as the
@@ -100,7 +119,7 @@ export default function Home() {
 
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(graphSchema) }}
       />
 
       {/* Editorial Hero: Split-Screen Layout */}

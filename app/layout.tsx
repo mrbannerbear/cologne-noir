@@ -35,6 +35,10 @@ export const metadata: Metadata = {
     default: "Cologne Noir",
     template: "%s | Cologne Noir",
   },
+  icons: [
+    { rel: "icon", url: "/favicon.ico" },
+    { rel: "manifest", url: "/site.webmanifest" },
+  ],
   description:
     "Perfume decants and full bottles from Chittagong. Browse the catalog, order COD, confirm by WhatsApp.",
   openGraph: {

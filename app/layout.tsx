@@ -36,10 +36,6 @@ export const metadata: Metadata = {
     default: "Cologne Noir",
     template: "%s | Cologne Noir",
   },
-  // icons: [
-  //   { rel: "icon", url: "/favicon.ico" },
-  //   { rel: "manifest", url: "/site.webmanifest" },
-  // ],
   description:
     "Perfume decants and full bottles, Bangladesh-based. Browse the catalog, order COD, confirm by WhatsApp.",
   openGraph: {

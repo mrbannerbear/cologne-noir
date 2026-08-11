@@ -10,10 +10,8 @@ export function Footer() {
           {/* Brand Column */}
           <div className="space-y-4">
             <div className="font-display text-2xl tracking-widest font-normal flex items-baseline">
-              C
-              <span className="italic text-muted font-normal text-xl -ml-0.5">
-                N
-              </span>
+              <span className="italic">Cologne</span>
+              <span className="font-light pl-1">Noir</span>
             </div>
             <p className="text-xs leading-relaxed text-muted max-w-xs">
               A boutique storefront presenting hand-selected decants and full

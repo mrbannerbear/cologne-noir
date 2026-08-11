@@ -78,7 +78,7 @@ export function NavBar() {
           <div className="flex flex-1 justify-center">
             <Link href="/" className="flex items-center gap-3 group" onClick={() => setOpen(false)}>
               <div className="font-display text-3xl tracking-widest font-normal select-none flex items-baseline">
-                <Image src={"/logo-clear.png"} height={40} width={140} alt="logo" className="w-24 md:w-30 lg:w-35" />
+                <Image src={"/logo-clear1.png"} height={40} width={140} alt="logo" className="w-24 md:w-30 lg:w-35" />
               </div>
             </Link>
           </div>
@@ -93,7 +93,7 @@ export function NavBar() {
             </Link>
             <span className="h-3 w-px bg-border" />
             <span className="label-caps text-[0.65rem] text-muted select-none">
-              Chittagong
+              BD · verified
             </span>
           </div>
 

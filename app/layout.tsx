@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     { rel: "manifest", url: "/site.webmanifest" },
   ],
   description:
-    "Perfume decants and full bottles from Chittagong. Browse the catalog, order COD, confirm by WhatsApp.",
+    "Perfume decants and full bottles, Bangladesh-based. Browse the catalog, order COD, confirm by WhatsApp.",
   openGraph: {
     siteName: "Cologne Noir",
     type: "website",

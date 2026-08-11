@@ -11,6 +11,7 @@ import { MenuToggle } from "@/components/menu-toggle";
 const links = [
   { href: "/products", label: "Catalog" },
   { href: "/about", label: "About Us" },
+  { href: "/faq", label: "FAQ" },
 ];
 
 export function NavBar() {
@@ -21,7 +22,7 @@ export function NavBar() {
 
   const drawerTransition = prefersReducedMotion
     ? { duration: 0.2, ease: "easeOut" as const }
-    : { type: "spring" as const, bounce: 0, duration: 0.5 };
+    : { type: "spring" as const, bounce: 0, duration: 0.35 };
 
   useEffect(() => {
     if (!open) return;
@@ -78,7 +79,7 @@ export function NavBar() {
           <div className="flex flex-1 justify-center">
             <Link href="/" className="flex items-center gap-3 group" onClick={() => setOpen(false)}>
               <div className="font-display text-3xl tracking-widest font-normal select-none flex items-baseline">
-                <Image src={"/logo-clear.png"} height={40} width={140} alt="logo" className="w-24 md:w-30 lg:w-35" />
+                <Image src={"/logo-clear1.png"} height={40} width={140} alt="logo" className="w-24 md:w-30 lg:w-35" />
               </div>
             </Link>
           </div>
@@ -93,7 +94,7 @@ export function NavBar() {
             </Link>
             <span className="h-3 w-px bg-border" />
             <span className="label-caps text-[0.65rem] text-muted select-none">
-              Chittagong
+              BD · verified
             </span>
           </div>
 
@@ -119,7 +120,7 @@ export function NavBar() {
             key="menu-backdrop"
             type="button"
             aria-label="Close menu"
-            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[1px] lg:hidden"
+            className="fixed inset-0 z-40 bg-black/40 lg:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -136,7 +137,7 @@ export function NavBar() {
             aria-modal="true"
             aria-label="Navigation menu"
             tabIndex={-1}
-            className="fixed inset-y-0 right-0 z-40 w-[60%] min-w-60 overflow-y-auto border-l border-border bg-background outline-none lg:hidden"
+            className="fixed inset-y-0 right-0 z-40 w-[60%] min-w-60 overflow-y-auto border-l border-border bg-background outline-none will-change-transform lg:hidden"
             initial={prefersReducedMotion ? { opacity: 0 } : { x: "100%" }}
             animate={prefersReducedMotion ? { opacity: 1 } : { x: 0 }}
             exit={prefersReducedMotion ? { opacity: 0 } : { x: "100%" }}

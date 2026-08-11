@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Footer } from "@/components/footer";
 import { NavBar } from "@/components/nav-bar";
+import { ScrollToTop } from "@/components/scroll-to-top";
 import { cn } from "@/lib/utils";
 
 const bodoniModa = Bodoni_Moda({
@@ -37,12 +38,8 @@ export const metadata: Metadata = {
     default: "Cologne Noir",
     template: "%s | Cologne Noir",
   },
-  icons: [
-    { rel: "icon", url: "/favicon.ico" },
-    { rel: "manifest", url: "/site.webmanifest" },
-  ],
   description:
-    "Perfume decants and full bottles from Chittagong. Browse the catalog, order COD, confirm by WhatsApp.",
+    "Perfume decants and full bottles, Bangladesh-based. Browse the catalog, order COD, confirm by WhatsApp.",
   openGraph: {
     siteName: "Cologne Noir",
     type: "website",
@@ -91,7 +88,8 @@ export default function RootLayout({
         className="min-h-svh flex flex-col relative bg-background text-foreground"
       >
         {grainOverlay}
-        
+        <ScrollToTop />
+
         <Suspense fallback={<NavSkeleton />}>
           <NavBar />
         </Suspense>

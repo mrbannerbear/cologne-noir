@@ -23,6 +23,7 @@
 # misc
 .DS_Store
 *.pem
+instructions-for-now-dynamic.txt
 
 # debug
 npm-debug.log*

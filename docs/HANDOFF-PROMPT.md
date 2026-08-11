@@ -27,7 +27,7 @@ and flag that you're missing detail on anything not covered here.
 ## What this project is
 
 A catalog + order-intake website for **Cologne Noir**, an Instagram-based fragrance decant and
-full-bottle business (Chittagong, Bangladesh — [@cologne.noir](https://instagram.com/cologne.noir),
+full-bottle business (Bangladesh — [@cologne.noir](https://instagram.com/cologne.noir),
 ships nationwide). It replaces "DM to order" with a real product catalog and order form.
 Fulfillment stays manual and personal — every order is confirmed by phone/WhatsApp before it
 ships. That's intentional, not a missing feature.

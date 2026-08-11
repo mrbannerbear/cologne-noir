@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FadeIn } from "@/components/fade-in";
+import { buttonVariants } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
 
 type OrderConfirmationProps = {
@@ -77,13 +78,13 @@ export default async function OrderConfirmationPage({ searchParams }: OrderConfi
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center pt-2">
           <Link
             href="/products"
-            className="inline-flex items-center justify-center border border-ink bg-ink text-white px-5 py-3 text-xs label-caps hover:bg-white hover:text-ink transition-colors duration-300"
+            className={buttonVariants({ variant: "primary" })}
           >
             Keep Browsing
           </Link>
           <Link
             href="/"
-            className="inline-flex items-center justify-center border border-border px-5 py-3 text-xs label-caps text-muted hover:border-foreground hover:text-foreground transition-all duration-300"
+            className={buttonVariants({ variant: "outline" })}
           >
             Back Home
           </Link>

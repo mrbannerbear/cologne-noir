@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type ErrorProps = {
   error: Error & { digest?: string };
@@ -29,13 +31,13 @@ export default function Error({ error, reset }: ErrorProps) {
           <button
             type="button"
             onClick={reset}
-            className="inline-flex items-center justify-center border border-ink bg-ink text-white px-5 py-3 text-xs label-caps hover:bg-white hover:text-ink transition-colors duration-300 cursor-pointer"
+            className={cn(buttonVariants({ variant: "primary" }), "cursor-pointer")}
           >
             Try Again
           </button>
           <Link
             href="/products"
-            className="inline-flex items-center justify-center border border-border px-5 py-3 text-xs label-caps text-muted hover:border-foreground hover:text-foreground transition-all duration-300"
+            className={buttonVariants({ variant: "outline" })}
           >
             Browse Catalog
           </Link>

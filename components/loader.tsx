@@ -1,6 +1,6 @@
 export function Loader() {
   return (
-    <div className="mx-auto flex w-full max-w-360xl items-center justify-center px-4 py-24 sm:px-6 lg:px-8">
+    <div className="mx-auto flex w-full max-w-360 items-center justify-center px-4 py-24 sm:px-6 lg:px-8">
       <div className="flex flex-col items-center gap-6">
         <span className="text-[10px] label-caps text-muted tracking-[0.3em]">
           Loading

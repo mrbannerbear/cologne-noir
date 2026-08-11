@@ -79,7 +79,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   };
 
   return (
-    <div className="mx-auto w-full max-w-360xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12 space-y-8">
+    <div className="mx-auto w-full max-w-360 px-4 py-8 sm:px-6 lg:px-8 lg:py-12 space-y-8">
       
       <script
         type="application/ld+json"

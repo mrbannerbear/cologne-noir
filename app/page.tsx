@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ProductGrid } from "@/components/product-grid";
 import { ShopAllLink } from "@/components/catalog-filters";
+import { buttonVariants } from "@/components/ui/button";
 import { FadeIn } from "@/components/fade-in";
 import type { Metadata } from "next";
 import { getCollectionStats, getFeaturedProducts } from "@/lib/products";
@@ -125,7 +126,7 @@ export default async function Home() {
             <ShopAllLink />
             <Link
               href="/about"
-              className="inline-flex items-center justify-center border border-border px-6 py-3 text-xs label-caps text-muted hover:border-foreground hover:text-foreground transition-all duration-300"
+              className={buttonVariants({ variant: "outline" })}
             >
               Shipping & Authenticity
             </Link>

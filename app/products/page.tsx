@@ -32,11 +32,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const products = await getActiveProducts(filter, q);
 
   return (
-    <div className="mx-auto w-full max-w-360xl px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
+    <div className="mx-auto w-full max-w-360 px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-3xl space-y-4">
           <p className="label-caps text-muted">Catalog</p>
-          <h1 className="text-[clamp(2rem,5vw,3.25rem)] font-semibold tracking-[-0.05em] text-foreground">
+          <h1 className="font-display text-[clamp(2rem,5vw,3.25rem)] font-light tracking-[-0.02em] text-foreground leading-[1.08]">
             Decants and full bottles, laid out for fast phone browsing.
           </h1>
           <p className="max-w-2xl text-base leading-8 text-muted">

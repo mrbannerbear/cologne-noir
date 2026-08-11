@@ -54,7 +54,7 @@ export const metadata: Metadata = {
 function NavSkeleton() {
   return (
     <header className="border-b border-border bg-background">
-      <div className="mx-auto flex w-full max-w-360xl items-center justify-between px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mx-auto flex w-full max-w-360 items-center justify-between px-4 py-6 sm:px-6 lg:px-8">
         <div className="hidden md:flex flex-1 items-center gap-6" />
         <div className="flex md:flex-1 justify-start md:justify-center" />
         <div className="hidden md:flex flex-1 items-center justify-end gap-6" />

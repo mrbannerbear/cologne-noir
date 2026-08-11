@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 
 const links = [
@@ -15,10 +15,11 @@ const links = [
 export function NavBar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <header className="relative z-40 border-b border-border bg-background">
-      <div className="mx-auto flex w-full max-w-360xl items-center justify-between px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mx-auto flex w-full max-w-360 items-center justify-between px-4 py-6 sm:px-6 lg:px-8">
         
         {/* Left Column: Nav Links (Desktop) */}
         <nav className="hidden flex-1 items-center gap-6 md:flex justify-start">
@@ -68,7 +69,7 @@ export function NavBar() {
           type="button"
           aria-expanded={open}
           aria-label="Toggle navigation"
-          className="label-caps text-xs text-foreground px-3 py-1.5 border border-border hover:bg-background-warm md:hidden transition-colors"
+          className="label-caps text-xs text-foreground px-3 py-1.5 border border-border hover:bg-background-warm md:hidden transition-colors outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
           onClick={() => setOpen((val) => !val)}
         >
           {open ? "Close" : "Menu"}
@@ -82,7 +83,11 @@ export function NavBar() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            transition={
+              prefersReducedMotion
+                ? { duration: 0.15, ease: "easeOut" }
+                : { duration: 0.35, ease: [0.16, 1, 0.3, 1] }
+            }
             className="overflow-hidden border-t border-border bg-background-warm md:hidden"
           >
             <nav className="flex flex-col px-4 py-6 gap-4">

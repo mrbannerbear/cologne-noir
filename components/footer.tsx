@@ -5,7 +5,7 @@ import { Suspense } from "react";
 export function Footer() {
   return (
     <footer className="relative z-10 border-t border-border bg-background-warm text-foreground">
-      <div className="mx-auto max-w-360xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-360 px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand Column */}
           <div className="space-y-4">

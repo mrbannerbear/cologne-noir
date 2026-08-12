@@ -1,0 +1,6 @@
+slug,brand,name,concentration,gender,description,topNotes,middleNotes,baseNotes,actualBottleMl,images,isActive,size,priceBdt,stockQty,sku
+dior-sauvage-eau-de-parfum,Dior,Sauvage,Eau de Parfum,MEN,"A fresh, spicy men's fragrance.","Bergamot|Calabrian Bergamot|Pepper",Sichuan Pepper|Lavender|Nutmeg,Ambroxan|Labdanum,100,https://example.com/sauvage.jpg,true,DECANT_5ML,450,25,DIO-SAUV-EDP-5
+dior-sauvage-eau-de-parfum,Dior,Sauvage,Eau de Parfum,MEN,,Bergamot|Calabrian Bergamot|Pepper,Sichuan Pepper|Lavender|Nutmeg,Ambroxan|Labdanum,100,,true,DECANT_10ML,850,20,DIO-SAUV-EDP-10
+dior-sauvage-eau-de-parfum,Dior,Sauvage,Eau de Parfum,MEN,,Bergamot|Calabrian Bergamot|Pepper,Sichuan Pepper|Lavender|Nutmeg,Ambroxan|Labdanum,100,,true,FULL_BOTTLE,10500,5,DIO-SAUV-EDP-100
+chanel-bleu-de-paris,Chanel,Bleu de Paris,Eau de Parfum,MEN,"Woody aromatic for evening wear.",Ginger|Lemon,Mint|Incense,Cedar|Sandalwood,100,,true,DECANT_10ML,950,15,CHA-BDP-10
+chanel-bleu-de-paris,Chanel,Bleu de Paris,Eau de Parfum,MEN,,Ginger|Lemon,Mint|Incense,Cedar|Sandalwood,100,,true,FULL_BOTTLE,12000,3,CHA-BDP-100

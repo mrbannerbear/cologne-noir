@@ -157,3 +157,14 @@
     display: none;
   }
 }
+
+/* While the mobile menu is open, drop the grain layer (mix-blend-mode forces
+   a full-viewport composite pass every frame of the drawer animation on
+   mobile GPUs) and lock page scroll without touching inline styles. */
+body.menu-open {
+  overflow: hidden;
+}
+
+body.menu-open .grain-overlay {
+  display: none;
+}

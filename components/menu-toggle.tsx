@@ -15,7 +15,7 @@ export function MenuToggle({ open }: MenuToggleProps) {
 
   if (reduceMotion) {
     return (
-      <span className="relative block h-[14px] w-[18px]" aria-hidden="true">
+      <span className="relative block h-3.5 w-4.5" aria-hidden="true">
         <span
           className="absolute inset-0 flex flex-col justify-between transition-opacity duration-150"
           style={{ opacity: open ? 0 : 1 }}
@@ -36,7 +36,7 @@ export function MenuToggle({ open }: MenuToggleProps) {
   }
 
   return (
-    <span className="relative block h-[14px] w-[18px]" aria-hidden="true">
+    <span className="relative block h-3.5 w-4.5" aria-hidden="true">
       <motion.span
         className="absolute left-0 top-0 h-[1.5px] w-full bg-current"
         initial={false}

@@ -17,42 +17,42 @@ const links = [
 export function NavBar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const prefersReducedMotion = useReducedMotion();
+  const prefersReducedMotion = useReducedMotion(); 
   const drawerRef = useRef<HTMLDivElement>(null);
 
   const drawerTransition = prefersReducedMotion
     ? { duration: 0.2, ease: "easeOut" as const }
     : { type: "spring" as const, bounce: 0, duration: 0.35 };
 
-  useEffect(() => {
-    if (!open) return;
+      useEffect(() => {
+        if (!open) return;
 
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+        const previousOverflow = document.body.style.overflow;
+        // document.body.style.overflow = "hidden";
 
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setOpen(false);
-      }
-    }
+        function onKeyDown(event: KeyboardEvent) {
+          if (event.key === "Escape") {
+            setOpen(false);
+          }
+        }
 
-    function onPopState() {
-      setOpen(false);
-    }
+        function onPopState() {
+          setOpen(false);
+        }
 
-    window.addEventListener("keydown", onKeyDown);
-    window.addEventListener("popstate", onPopState);
+        window.addEventListener("keydown", onKeyDown);
+        window.addEventListener("popstate", onPopState);
 
-    const previouslyFocused = document.activeElement as HTMLElement | null;
-    drawerRef.current?.focus();
+        const previouslyFocused = document.activeElement as HTMLElement | null;
+        drawerRef.current?.focus();
 
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener("popstate", onPopState);
-      previouslyFocused?.focus();
-    };
-  }, [open]);
+        return () => {
+          document.body.style.overflow = previousOverflow;
+          window.removeEventListener("keydown", onKeyDown);
+          window.removeEventListener("popstate", onPopState);
+          previouslyFocused?.focus();
+        };
+      }, [open]);
 
   return (
     <>
@@ -79,7 +79,14 @@ export function NavBar() {
           <div className="flex flex-1 justify-center">
             <Link href="/" className="flex items-center gap-3 group" onClick={() => setOpen(false)}>
               <div className="font-display text-3xl tracking-widest font-normal select-none flex items-baseline">
-                <Image src={"/logo-clear1.png"} height={40} width={140} alt="logo" className="w-24 md:w-30 lg:w-35" />
+                <Image
+                  src={"/logo-clear1.png"}
+                  height={69}
+                  width={140}
+                  alt="logo"
+                  loading="eager"
+                  className="h-auto w-24 md:w-30 lg:w-35"
+                />
               </div>
             </Link>
           </div>

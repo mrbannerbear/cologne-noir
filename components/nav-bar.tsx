@@ -22,37 +22,36 @@ export function NavBar() {
 
   const drawerTransition = prefersReducedMotion
     ? { duration: 0.2, ease: "easeOut" as const }
-    : { type: "spring" as const, bounce: 0, duration: 0.35 };
+    : { duration: 0.35, ease: [0.25, 1, 0.5, 1] as const };
 
-      useEffect(() => {
-        if (!open) return;
+  useEffect(() => {
+    if (!open) return;
 
-        const previousOverflow = document.body.style.overflow;
-        // document.body.style.overflow = "hidden";
+    document.body.classList.add("menu-open");
 
-        function onKeyDown(event: KeyboardEvent) {
-          if (event.key === "Escape") {
-            setOpen(false);
-          }
-        }
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    }
 
-        function onPopState() {
-          setOpen(false);
-        }
+    function onPopState() {
+      setOpen(false);
+    }
 
-        window.addEventListener("keydown", onKeyDown);
-        window.addEventListener("popstate", onPopState);
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("popstate", onPopState);
 
-        const previouslyFocused = document.activeElement as HTMLElement | null;
-        drawerRef.current?.focus();
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    drawerRef.current?.focus();
 
-        return () => {
-          document.body.style.overflow = previousOverflow;
-          window.removeEventListener("keydown", onKeyDown);
-          window.removeEventListener("popstate", onPopState);
-          previouslyFocused?.focus();
-        };
-      }, [open]);
+    return () => {
+      document.body.classList.remove("menu-open");
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("popstate", onPopState);
+      previouslyFocused?.focus();
+    };
+  }, [open]);
 
   return (
     <>

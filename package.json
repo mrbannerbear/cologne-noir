@@ -10,6 +10,7 @@
     "type-check": "tsc --noEmit",
     "db:migrate": "bunx dotenv -e .env.local -- bunx prisma migrate dev",
     "db:seed": "bunx dotenv -e .env.local -- bunx prisma db seed",
+    "db:import": "bunx dotenv -e .env.local -- bunx tsx scripts/import-products.ts",
     "db:studio": "bunx dotenv -e .env.local -- bunx prisma studio"
   },
   "dependencies": {

@@ -24,7 +24,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
     >
       
       {/* Product Image Frame */}
-      <div className="relative aspect-[4/5] overflow-hidden border border-border bg-background-warm">
+      <div className="relative aspect-4/5 overflow-hidden border border-border bg-background-warm">
         {coverImage ? (
           <Image
             src={coverImage}

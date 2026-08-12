@@ -22,7 +22,7 @@ export function NavBar() {
 
   const drawerTransition = prefersReducedMotion
     ? { duration: 0.2, ease: "easeOut" as const }
-    : { duration: 0.35, ease: [0.25, 1, 0.5, 1] as const };
+    : { duration: 0.3, ease: [0.25, 1, 0.5, 1] as const };
 
   useEffect(() => {
     if (!open) return;
@@ -143,48 +143,52 @@ export function NavBar() {
             aria-modal="true"
             aria-label="Navigation menu"
             tabIndex={-1}
-            className="fixed inset-y-0 right-0 z-40 w-[60%] min-w-60 overflow-y-auto border-l border-border bg-background outline-none will-change-transform lg:hidden"
+            className="fixed inset-y-0 right-0 z-40 w-[78%] min-w-72 border-l border-border bg-background outline-none lg:hidden"
             initial={prefersReducedMotion ? { opacity: 0 } : { x: "100%" }}
             animate={prefersReducedMotion ? { opacity: 1 } : { x: 0 }}
             exit={prefersReducedMotion ? { opacity: 0 } : { x: "100%" }}
             transition={drawerTransition}
           >
-            <nav className="flex min-h-full flex-col px-6 pb-8 pt-28">
-              <p className="label-caps text-[10px] text-muted">Navigation</p>
-              <div className="mt-4 flex flex-col">
-                {links.map((link, index) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                    className={cn(
-                      "group flex items-baseline justify-between gap-4 border-b border-border py-5 transition-colors",
-                      pathname.startsWith(link.href) ? "text-foreground" : "text-muted hover:text-foreground"
-                    )}
-                  >
-                    <span className="flex items-baseline gap-3">
-                      <span className="label-caps text-[9px] text-muted">0{index + 1}</span>
-                      <span className="font-display text-3xl font-light italic tracking-tight">{link.label}</span>
-                    </span>
-                    <span className="text-muted transition-colors group-hover:text-foreground" aria-hidden="true">
-                      →
-                    </span>
-                  </Link>
-                ))}
-              </div>
-
-              <div className="mt-auto space-y-6 pt-12">
-                <div className="h-px bg-border" />
-                <div className="flex justify-between items-center">
-                  <span className="label-caps text-[0.65rem] text-muted">
-                    Instagram: @cologne.noir
-                  </span>
-                  <span className="label-caps text-[0.65rem] text-muted">
-                    COD Bangladesh
-                  </span>
+            {/* Scroll container is a child of the transformed drawer so the
+                overflow region never sits on the animated layer. */}
+            <div className="h-full overflow-y-auto">
+              <nav className="flex min-h-full flex-col px-6 pb-8 pt-28">
+                <p className="label-caps text-[10px] text-muted">Navigation</p>
+                <div className="mt-4 flex flex-col">
+                  {links.map((link, index) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setOpen(false)}
+                      className={cn(
+                        "group flex items-baseline justify-between gap-4 border-b border-border py-5 transition-colors",
+                        pathname.startsWith(link.href) ? "text-foreground" : "text-muted hover:text-foreground"
+                      )}
+                    >
+                      <span className="flex items-baseline gap-3">
+                        <span className="label-caps text-[9px] text-muted">0{index + 1}</span>
+                        <span className="font-display text-3xl font-light italic tracking-tight">{link.label}</span>
+                      </span>
+                      <span className="text-muted transition-colors group-hover:text-foreground" aria-hidden="true">
+                        →
+                      </span>
+                    </Link>
+                  ))}
                 </div>
-              </div>
-            </nav>
+
+                <div className="mt-auto space-y-6 pt-12">
+                  <div className="h-px bg-border" />
+                  <div className="flex justify-between items-center">
+                    <span className="label-caps text-[0.65rem] text-muted">
+                      Instagram: @cologne.noir
+                    </span>
+                    <span className="label-caps text-[0.65rem] text-muted">
+                      COD Bangladesh
+                    </span>
+                  </div>
+                </div>
+              </nav>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

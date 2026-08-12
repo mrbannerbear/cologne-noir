@@ -83,6 +83,61 @@
   }
 }
 
+/* Hero photograph settle — a barely-there scale (1.03 → 1), driven purely by
+   CSS so the LCP image is never hidden behind JS hydration. Opacity is left
+   at 1 from the first paint; only transform animates. */
+@keyframes hero-settle {
+  from {
+    transform: scale(1.03);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.hero-image {
+  animation: hero-settle 1s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-image {
+    animation: none;
+  }
+}
+
+/* Font swap fallbacks. next/font computes these against Windows fonts
+   (Times New Roman / Arial), which don't exist on Android — without a
+   resolvable local() source the browser drops the metric overrides and the
+   webfont swap reflows the whole page (the field CLS we couldn't see in
+   lab). These faces supply local() chains that also resolve on Android,
+   so the size-adjust/ascent/descent overrides actually apply everywhere. */
+@font-face {
+  font-family: "Bodoni Moda Fallback";
+  src: local("Times New Roman"), local("Georgia"), local("Noto Serif"), local("Roboto Serif");
+  ascent-override: 98.5%;
+  descent-override: 35.02%;
+  line-gap-override: 0.0%;
+  size-adjust: 114.22%;
+}
+
+@font-face {
+  font-family: "Inter Fallback";
+  src: local("Arial"), local("Helvetica"), local("Roboto"), local("Noto Sans");
+  ascent-override: 90.44%;
+  descent-override: 22.52%;
+  line-gap-override: 0.0%;
+  size-adjust: 107.12%;
+}
+
+@font-face {
+  font-family: "Courier Prime Fallback";
+  src: local("Courier New"), local("Consolas"), local("Menlo"), local("Droid Sans Mono"), local("Noto Sans Mono");
+  ascent-override: 58.08%;
+  descent-override: 25.41%;
+  line-gap-override: 0.0%;
+  size-adjust: 134.5%;
+}
+
 /* The "hazy" texture layer — page-wide film grain so photography and flat
    color fields feel like one slightly-textured world. Kept very low opacity. */
 .grain-overlay {

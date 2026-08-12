@@ -139,7 +139,7 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
             disabled={!canOpenSheet}
             onClick={() => setSheetOpen(true)}
             className={cn(
-              "min-w-[10rem] h-[40px]",
+              "min-w-40 h-10",
               !canOpenSheet && "cursor-not-allowed"
             )}
           >

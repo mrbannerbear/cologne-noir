@@ -56,9 +56,19 @@ function NavSkeleton() {
   return (
     <header className="border-b border-border bg-background">
       <div className="mx-auto flex w-full max-w-360 items-center justify-between px-4 py-6 sm:px-6 lg:px-8">
-        <div className="hidden lg:flex flex-1 items-center gap-6" />
-        <div className="flex lg:flex-1 justify-start lg:justify-center" />
-        <div className="hidden lg:flex flex-1 items-center justify-end gap-6" />
+        <div className="hidden lg:flex flex-1 items-center gap-6">
+          <span className="h-3 w-10 bg-border/60" />
+          <span className="h-3 w-14 bg-border/60" />
+          <span className="h-3 w-8 bg-border/60" />
+        </div>
+        <div className="flex flex-1 justify-center">
+          <div className="w-24 md:w-30 lg:w-35 aspect-[7/2] bg-background-warm" />
+        </div>
+        <div className="hidden lg:flex flex-1 items-center justify-end gap-6">
+          <span className="h-3 w-12 bg-border/60" />
+          <span className="h-3 w-px bg-border/60" />
+          <span className="h-3 w-16 bg-border/60" />
+        </div>
         <div className="lg:hidden h-10 w-10 border border-border bg-background-warm" />
       </div>
     </header>

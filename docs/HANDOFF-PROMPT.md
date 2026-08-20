@@ -81,14 +81,14 @@ referenced elsewhere):**
 
 **Data model highlights (full schema in `02-database-schema.md`):**
 - `Product` has `gender` (enum: MEN/WOMEN/UNISEX), separate `topNotes`/`middleNotes`/`baseNotes`
-  string arrays (not one flat notes list), and `actualBottleMl` + `actualBottleFullPriceBdt` —
-  because bottles come in 75ml/100ml/125ml, not always 100ml.
-- **Decant pricing formula:** `pricePerMl = actualBottleFullPriceBdt / actualBottleMl`. Preset
-  sizes (5ml/10ml/15ml/Full Bottle) are real stocked `ProductVariant` rows. **Custom** decant
-  amounts are calculated live from this formula at order time — never pre-stocked, always
-  recomputed **server-side** on order submission (never trust a client-sent price).
-- `OrderItem` snapshots price and label at time of order, and references either a
-  `productVariantId` (preset) or `customMl` (custom) — never both, never neither.
+  string arrays (not one flat notes list), and `actualBottleMl` — because bottles come in
+  75ml/100ml/125ml, not always 100ml.
+- Preset sizes (5ml/10ml/15ml/Full Bottle) are real stocked `ProductVariant` rows with stored
+  `priceBdt`. There is no free-form custom amount.
+- `Product.isAvailable` controls sale status: `false` keeps the listing visible but marks it
+  "Sold Out" and blocks ordering on both client and server. Per-variant `stockQty` is
+  admin-facing tracking only.
+- `OrderItem` snapshots price and label at time of order and references a `productVariantId`.
 
 ## Current progress (verify with Sayed before assuming more than this)
 

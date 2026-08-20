@@ -5,7 +5,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://colognenoir.com";
 
   const products = await prisma.product.findMany({
-    where: { isActive: true },
     select: { slug: true, updatedAt: true },
     orderBy: { createdAt: "desc" },
   });

@@ -103,7 +103,7 @@ async function HeroVisual() {
    static and give that one cell a pulsing placeholder. */
 async function ActiveCatalogCount() {
   const stats = await getCollectionStats();
-  return <>{`${stats.activeProducts} scents`}</>;
+  return <>{`${stats.totalProducts} scents`}</>;
 }
 
 async function FeaturedGrid() {

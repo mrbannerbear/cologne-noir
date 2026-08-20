@@ -9,10 +9,10 @@ import type { VariantSize } from "@prisma/client";
  *
  *  - HIDDEN_VARIANT_SIZES  -> omitted from the public UI (not shown, not selectable
  *    by customers). Still orderable through the API if a crafted request arrives.
- *  - BLOCKED_ORDER_VARIANT_SIZES -> shown in the UI but REJECTED at order time
- *    (server-side guard in `lib/orders.ts`).
+ *  - BLOCKED_ORDER_VARIANT_SIZES -> REJECTED at order time (server-side guard in
+ *    `lib/orders.ts`). May or may not be visible in the UI.
  */
-export const HIDDEN_VARIANT_SIZES: readonly VariantSize[] = [];
+export const HIDDEN_VARIANT_SIZES: readonly VariantSize[] = ["DECANT_100ML"];
 
 export const BLOCKED_ORDER_VARIANT_SIZES: readonly VariantSize[] = ["DECANT_100ML"];
 

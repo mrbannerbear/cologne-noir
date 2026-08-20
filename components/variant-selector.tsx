@@ -4,6 +4,7 @@ import { formatBdt } from "@/lib/format";
 import type { ProductVariantView } from "@/types";
 import { cn } from "@/lib/utils";
 import type { VariantSelection } from "@/types";
+import { isVariantVisible } from "@/lib/order-rules";
 
 type VariantSelectorProps = {
   product: {
@@ -22,7 +23,9 @@ export function VariantSelector({ product, selection, onChange }: VariantSelecto
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {product.variants.map((variant) => {
           const isSelected = selection.variantId === variant.id;
-
+          if (!isVariantVisible(variant.size)) {
+            return null;
+          }
           return (
             <button
               key={variant.id}
@@ -35,7 +38,7 @@ export function VariantSelector({ product, selection, onChange }: VariantSelecto
                 })
               }
               className={cn(
-                "rounded-[2px] border p-3 text-left transition-colors duration-300 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
+                "rounded-xs border p-3 text-left transition-colors duration-300 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
                 isSelected
                   ? "border-ink bg-ink text-white font-medium"
                   : "border-border bg-transparent text-foreground hover:border-foreground"

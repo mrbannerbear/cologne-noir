@@ -1,6 +1,7 @@
 import type { Gender, Product, ProductVariant } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import type { GenderFilter, ProductVariantView, ProductWithVariants } from "@/types";
+import { isVariantVisible } from "@/lib/order-rules";
 
 export function variantLabel(size: string, bottleMl?: number) {
   if (size === "FULL_BOTTLE") {
@@ -18,7 +19,9 @@ function toProductView(product: Product & { variants: ProductVariant[] }): Produ
 
   const blobBase = process.env.BLOB || "";
 
-  const variants: ProductVariantView[] = product.variants.map((variant) => {
+  const visibleVariants = product.variants.filter((variant) => isVariantVisible(variant.size));
+
+  const variants: ProductVariantView[] = visibleVariants.map((variant) => {
     if (variant.priceBdt < priceFloor) priceFloor = variant.priceBdt;
     if (variant.priceBdt > priceCeiling) priceCeiling = variant.priceBdt;
 

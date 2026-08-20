@@ -22,6 +22,9 @@ export async function POST(request: Request) {
       if (result.message === "Invalid order payload.") {
         return NextResponse.json(result, { status: 400 });
       }
+      if (result.message === "This size is not orderable right now.") {
+        return NextResponse.json(result, { status: 409 });
+      }
       return NextResponse.json(result, { status: 404 });
     }
 

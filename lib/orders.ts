@@ -4,6 +4,7 @@ import { variantLabel } from "@/lib/products";
 import { orderSchema } from "@/lib/validations";
 import { sendTelegramMessage } from "@/lib/telegram";
 import { getEnvironment } from "@/lib/environment";
+import { isVariantOrderable } from "@/lib/order-rules";
 
 export type OrderInput = {
   productId: string;
@@ -59,6 +60,10 @@ export async function placeOrder(input: OrderInput): Promise<OrderResult> {
 
   if (!variant) {
     return { success: false, message: "Variant not found." };
+  }
+
+  if (!isVariantOrderable(variant.size)) {
+    return { success: false, message: "This size is not orderable right now." };
   }
 
   const label = variantLabel(variant.size, product.actualBottleMl);

@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import type { FormEvent, ChangeEvent } from "react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { submitOrder } from "@/lib/actions";
 import { formatBdt } from "@/lib/format";
@@ -47,6 +47,8 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
   const qty = Number(quantity || 1);
   const total = selection.unitPrice * qty;
   const unavailable = !product.isAvailable || !hasVariants;
+
+  const closeSheet = useCallback(() => setSheetOpen(false), []);
 
   const canOpenSheet = !unavailable;
 
@@ -140,17 +142,17 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
 
       <Sheet
         open={sheetOpen}
-        onClose={() => setSheetOpen(false)}
+        onClose={closeSheet}
         title={`${product.brand} ${product.name}`}
       >
         <form onSubmit={onSubmit} className="space-y-6">
 
           {/* Order Snapshot Receipt */}
           <div className="border border-border bg-background p-4 text-xs font-mono space-y-2">
-            <p className="text-foreground font-semibold">{selection.label} × {qty}</p>
+            <p className="text-foreground font-semibold">{selection.label} Ã— {qty}</p>
             <p className="text-sm font-semibold text-foreground">{formatBdt(total)}</p>
             <p className="text-[10px] text-muted pt-1 border-t border-border/60">
-              COD — we will confirm by WhatsApp before shipping.
+              COD â€” we will confirm by WhatsApp before shipping.
             </p>
           </div>
 
@@ -218,7 +220,7 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
             disabled={isSubmitting || !canSubmit}
             className={cn("w-full", (isSubmitting || !canSubmit) && "cursor-not-allowed")}
           >
-            {isSubmitting ? "Placing Order..." : `Confirm Order · ${formatBdt(total)}`}
+            {isSubmitting ? "Placing Order..." : `Confirm Order Â· ${formatBdt(total)}`}
           </Button>
 
           {errorMessage ? (

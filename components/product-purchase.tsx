@@ -17,31 +17,23 @@ type ProductPurchaseProps = {
 };
 
 function initialSelection(product: ProductWithVariants): VariantSelection {
-  const firstAvailable = product.variants.find((variant) => variant.stockQty > 0);
-
-  if (firstAvailable) {
-    return {
-      mode: "preset",
-      variantId: firstAvailable.id,
-      label: firstAvailable.label,
-      unitPrice: firstAvailable.priceBdt,
-    };
-  }
-
-  const fullBottleVariant = product.variants.find((v) => v.size === "FULL_BOTTLE");
-  const fullBottlePrice = fullBottleVariant?.priceBdt ?? 0;
+  const firstVariant = product.variants[0]!;
 
   return {
-    mode: "custom",
-    customMl: 20,
-    label: "20ml Custom Decant",
-    unitPrice: Math.round((fullBottlePrice / product.actualBottleMl) * 20),
+    variantId: firstVariant.id,
+    label: firstVariant.label,
+    unitPrice: firstVariant.priceBdt,
   };
 }
 
 export function ProductPurchase({ product }: ProductPurchaseProps) {
   const router = useRouter();
-  const [selection, setSelection] = useState<VariantSelection>(() => initialSelection(product));
+  const hasVariants = product.variants.length > 0;
+  const [selection, setSelection] = useState<VariantSelection>(() =>
+    hasVariants
+      ? initialSelection(product)
+      : { variantId: "", label: "", unitPrice: 0 },
+  );
   const [quantity, setQuantity] = useState("1");
   const [sheetOpen, setSheetOpen] = useState(false);
   const [customerName, setCustomerName] = useState("");
@@ -54,11 +46,9 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
 
   const qty = Number(quantity || 1);
   const total = selection.unitPrice * qty;
-  const presetSoldOut =
-    selection.mode === "preset" &&
-    product.variants.find((variant) => variant.id === selection.variantId)?.stockQty === 0;
+  const unavailable = !product.isAvailable || !hasVariants;
 
-  const canOpenSheet = selection.mode === "custom" || !presetSoldOut;
+  const canOpenSheet = !unavailable;
 
   const canSubmit = useMemo(
     () =>
@@ -78,8 +68,7 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
     try {
       const result = await submitOrder({
         productId: product.id,
-        productVariantId: selection.mode === "preset" ? selection.variantId : undefined,
-        customMl: selection.mode === "custom" ? selection.customMl : undefined,
+        productVariantId: selection.variantId,
         quantity: qty,
         customerName,
         phone,
@@ -104,7 +93,7 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
   return (
     <>
       <div className="space-y-6">
-        
+
         {/* Live pricing display */}
         <div className="flex items-center justify-between gap-4 border-b border-border pb-4">
           <div>
@@ -133,7 +122,7 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
               />
             </div>
           </div>
-          
+
           <Button
             type="button"
             disabled={!canOpenSheet}
@@ -143,10 +132,10 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
               !canOpenSheet && "cursor-not-allowed"
             )}
           >
-            Order Now
+            {unavailable ? "Currently Unavailable" : "Order Now"}
           </Button>
         </div>
-        
+
       </div>
 
       <Sheet
@@ -155,7 +144,7 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
         title={`${product.brand} ${product.name}`}
       >
         <form onSubmit={onSubmit} className="space-y-6">
-          
+
           {/* Order Snapshot Receipt */}
           <div className="border border-border bg-background p-4 text-xs font-mono space-y-2">
             <p className="text-foreground font-semibold">{selection.label} × {qty}</p>
@@ -167,7 +156,7 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
 
           {/* Underline Style Input Form Grid */}
           <div className="space-y-4">
-            
+
             <label className="block space-y-1">
               <span className="label-caps text-[10px] text-muted">Full name</span>
               <input
@@ -188,7 +177,7 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
                   placeholder="017XXXXXXXX"
                 />
               </label>
-              
+
               <label className="block space-y-1">
                 <span className="label-caps text-[10px] text-muted">City</span>
                 <input
@@ -220,7 +209,7 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
                 placeholder="Call after 6pm"
               />
             </label>
-            
+
           </div>
 
           {/* Solid Ink Submit Button */}
@@ -235,7 +224,7 @@ export function ProductPurchase({ product }: ProductPurchaseProps) {
           {errorMessage ? (
             <p className="text-xs font-mono text-muted text-center pt-2">{errorMessage}</p>
           ) : null}
-          
+
         </form>
       </Sheet>
     </>

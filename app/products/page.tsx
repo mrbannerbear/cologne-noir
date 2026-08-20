@@ -67,8 +67,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             Decants and full bottles, laid out for fast phone browsing.
           </h1>
           <p className="max-w-2xl text-base leading-8 text-muted">
-            Filter by gender, check live stock on preset sizes, or request a custom ml amount priced
-            from the actual bottle size.
+            Filter by gender, or order preset decant sizes and full bottles priced from the actual
+            bottle size.
           </p>
         </div>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end">

@@ -22,7 +22,7 @@ export type ProductWithVariants = {
   baseNotes: string[];
   actualBottleMl: number;
   images: string[];
-  isActive: boolean;
+  isAvailable: boolean;
   variants: ProductVariantView[];
   priceFloor: number;
   priceCeiling: number;
@@ -33,14 +33,15 @@ export type GenderFilter = Gender | "ALL";
 
 // ── Order domain ──────────────────────────────────────────
 
-export type VariantSelection =
-  | { mode: "preset"; variantId: string; label: string; unitPrice: number }
-  | { mode: "custom"; customMl: number; label: string; unitPrice: number };
+export type VariantSelection = {
+  variantId: string;
+  label: string;
+  unitPrice: number;
+};
 
 export type OrderFormData = {
   productId: string;
-  productVariantId?: string;
-  customMl?: number;
+  productVariantId: string;
   quantity: number;
   customerName: string;
   phone: string;
@@ -56,7 +57,7 @@ export type OrderApiResponse =
 // ── Collection / stats ───────────────────────────────────
 
 export type CollectionStats = {
-  activeProducts: number;
+  totalProducts: number;
   variantCount: number;
   priceFloor: number;
   priceCeiling: number;

@@ -146,10 +146,8 @@ similar deliberately-designed set-piece sections — not for routine UI like pro
 - Small rectangular buttons (2px radius per the token above), 1px `--border` outline,
   transparent background. Selected state: solid `--ink` fill, white text — this is the *only*
   place solid black fill is used outside the primary CTA, so selection state stays unambiguous.
-  Sold-out presets: outline only, muted text, strikethrough price, disabled.
-- "Custom Amount" behaves the same as before functionally (reveals an ml input, live price via
-  `pricePerMl`) — just restyled: underline-style input (see Order Form below), no expand/spring
-  animation, a simple height transition is enough.
+  Availability is product-level (`Product.isAvailable`); unavailable products show a
+  "Currently Unavailable" state and the order CTA is disabled everywhere.
 
 **Order Form**
 - Underline-style inputs, matching the postcard reference exactly: label to the left (or above

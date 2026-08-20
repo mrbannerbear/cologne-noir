@@ -14,14 +14,13 @@ export function variantLabel(size: string, bottleMl?: number) {
 function toProductView(product: Product & { variants: ProductVariant[] }): ProductWithVariants {
   let priceFloor = Infinity;
   let priceCeiling = -Infinity;
-  let hasStock = false;
+  const hasStock = product.isAvailable;
 
   const blobBase = process.env.BLOB || "";
 
   const variants: ProductVariantView[] = product.variants.map((variant) => {
     if (variant.priceBdt < priceFloor) priceFloor = variant.priceBdt;
     if (variant.priceBdt > priceCeiling) priceCeiling = variant.priceBdt;
-    if (variant.stockQty > 0) hasStock = true;
 
     return {
       id: variant.id,
@@ -44,7 +43,7 @@ function toProductView(product: Product & { variants: ProductVariant[] }): Produ
     baseNotes: product.baseNotes,
     actualBottleMl: product.actualBottleMl,
     images: product.images.map((img) => img.startsWith("http") ? img : `${blobBase}${img}`),
-    isActive: product.isActive,
+    isAvailable: product.isAvailable,
     variants,
     priceFloor: variants.length ? priceFloor : 0,
     priceCeiling: variants.length ? priceCeiling : 0,
@@ -55,7 +54,6 @@ function toProductView(product: Product & { variants: ProductVariant[] }): Produ
 export async function getActiveProducts(gender: GenderFilter = "ALL", search?: string) {
   const products = await prisma.product.findMany({
     where: {
-      isActive: true,
       ...(gender !== "ALL" ? { gender } : {}),
       ...(search
         ? {
@@ -75,7 +73,6 @@ export async function getActiveProducts(gender: GenderFilter = "ALL", search?: s
 
 export async function getFeaturedProducts(limit = 4) {
   const products = await prisma.product.findMany({
-    where: { isActive: true },
     include: { variants: { orderBy: { size: "asc" } } },
     orderBy: { createdAt: "desc" },
     take: limit,
@@ -90,7 +87,7 @@ export async function getProductBySlug(slug: string) {
     include: { variants: { orderBy: { size: "asc" } } },
   });
 
-  if (!product || !product.isActive) {
+  if (!product) {
     return null;
   }
 
@@ -99,17 +96,16 @@ export async function getProductBySlug(slug: string) {
 
 export async function getCollectionStats() {
   const [productCount, variantStats] = await Promise.all([
-    prisma.product.count({ where: { isActive: true } }),
+    prisma.product.count(),
     prisma.productVariant.aggregate({
       _count: true,
       _min: { priceBdt: true },
       _max: { priceBdt: true },
-      where: { product: { isActive: true } },
     }),
   ]);
 
   return {
-    activeProducts: productCount,
+    totalProducts: productCount,
     variantCount: variantStats._count,
     priceFloor: variantStats._min.priceBdt ?? 0,
     priceCeiling: variantStats._max.priceBdt ?? 0,
@@ -118,7 +114,6 @@ export async function getCollectionStats() {
 
 export async function getProductSlugs() {
   const products = await prisma.product.findMany({
-    where: { isActive: true },
     select: { slug: true, updatedAt: true },
     orderBy: { createdAt: "desc" },
   });
@@ -127,7 +122,7 @@ export async function getProductSlugs() {
 
 export async function getRelatedProducts(slug: string, limit = 3) {
   const products = await prisma.product.findMany({
-    where: { isActive: true, slug: { not: slug } },
+    where: { slug: { not: slug } },
     include: { variants: { orderBy: { size: "asc" } } },
     orderBy: { createdAt: "desc" },
     take: limit,

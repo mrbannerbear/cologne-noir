@@ -11,7 +11,7 @@ products without database access.
 - Screens:
   - **Orders** — list with status filter (Pending/Confirmed/Shipped/Delivered), tap to update
     status (replaces manually editing in Prisma Studio).
-  - **Products** — add/edit product + variants, toggle `isActive`, update `stockQty` and
+  - **Products** — add/edit product + variants, toggle `isAvailable`, update `stockQty` and
     prices, upload photos directly (Vercel Blob upload widget) instead of via seed scripts.
 - This reuses the exact same Prisma schema from Phase 1 — no data migration needed, just a UI
   layer on top.
@@ -20,10 +20,6 @@ products without database access.
 - **Move off CallMeBot to the official WhatsApp Cloud API** (Option B in
   `05-whatsapp-notifications.md`) once the site is live and depended on daily — the unofficial
   option is fine for launch but isn't something to build a real business on long-term.
-- **Decant markup field**: right now `customDecantPrice()` is a pure per-ml split of the full
-  bottle price. If you want custom decants priced slightly above straight-line (to cover
-  bottling labor/empty vials), add a `decantMarkupPercent` field to `Product` and apply it in
-  `lib/pricing.ts` — small, additive change, no schema migration pain.
 - **Online payment**: bKash/Nagad merchant integration once COD friction (failed
   deliveries, no-shows) becomes a real cost.
 - **Cart / multi-item orders**: once customers regularly want to order 2+ products at once —

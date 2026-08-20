@@ -119,6 +119,8 @@ async function ProductContent({ slug }: { slug: string }) {
   }
   const coverImage = product.images[0];
 
+  const availability = product.isAvailable ? "https://schema.org/InStock" : "https://schema.org/OutOfStock";
+
   const productSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -132,7 +134,7 @@ async function ProductContent({ slug }: { slug: string }) {
       price: variant.priceBdt,
       priceCurrency: "BDT",
       priceValidUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(),
-      availability: variant.stockQty > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      availability,
       itemCondition: "https://schema.org/NewCondition",
     })),
     image: coverImage ? [coverImage] : [],

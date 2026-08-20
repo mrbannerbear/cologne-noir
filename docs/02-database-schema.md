@@ -6,25 +6,17 @@ means Phase 2 is "build a UI on top of existing data" instead of "migrate a spre
 database while the site is live." Prisma Studio gives you a free, instant admin-panel-like GUI
 in the meantime.
 
-## Key pricing concept: derive decant price from actual bottle size
-Bottles don't always come in 100ml — you mentioned 75ml and 125ml variants exist too. So each
-`Product` stores its **actual** bottle size and **actual** full-bottle price, and every decant
-price (preset or custom) is derived from that at a **price-per-ml** rate:
+## Key pricing concept: preset decant sizes with stored prices
+Bottles don't always come in 100ml — 75ml and 125ml variants exist too. Each `Product` stores
+its **actual** bottle size so labels and page copy stay accurate. Decant prices are **stored as
+real `ProductVariant` rows** (`priceBdt` per size) — set once via the import script / Prisma
+Studio, never computed at order time. An order always references one concrete variant.
 
-```
-pricePerMl = actualBottleFullPriceBdt / actualBottleMl
-decantPrice(ml) = round(pricePerMl * ml)
-```
+Example: a 125ml bottle priced at ৳12,500 → you set 5ml/10ml rows at whatever price you want
+and edit them freely by hand. There is no per-ml math on the order path.
 
-Example: a 125ml bottle priced at ৳12,500 → pricePerMl = ৳100/ml → a custom 22ml decant =
-৳2,200. This keeps every bottle size consistent without you manually recalculating decant
-prices by hand each time.
-
-Preset decant sizes (5ml / 10ml / 15ml) are still stored as real `ProductVariant` rows with
-their own `priceBdt` and `stockQty` — because you likely pre-bottle these ahead of time, so
-they have real, trackable stock. **Custom** decant amounts are *not* pre-bottled or
-pre-stocked; they're calculated live at order time from `pricePerMl`, with no stock tracking
-(decanted to order).
+All `ProductVariant` sizes are preset (5ml / 10ml / full bottle). There is no free-form custom
+amount.
 
 ## Prisma schema (`prisma/schema.prisma`)
 
@@ -72,19 +64,18 @@ model Product {
   middleNotes            String[]
   baseNotes              String[]
 
-  // Real bottle economics — the source of truth for all decant pricing
-  actualBottleMl         Int                        // 75, 100, 125, etc. — the real bottle size
-  actualBottleFullPriceBdt Int                      // what a full bottle at that size costs you
+  // Real bottle size — used for labels and page copy (e.g. "100ml bottle")
+  actualBottleMl         Int                        // 75, 100, 125, etc.
 
   images                 String[]                   // Vercel Blob URLs, first = cover image
-  isActive               Boolean  @default(true)     // hide instead of delete
+  isAvailable            Boolean  @default(true)    // false → sold out, ordering disabled (product stays listed)
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
 
   variants               ProductVariant[]
   orderItems             OrderItem[]
 
-  @@index([isActive])
+  @@index([isAvailable])
   @@index([gender])
 }
 
@@ -93,10 +84,9 @@ model ProductVariant {
   productId   String
   product     Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  size        VariantSize                          // preset size (never used for custom)
-  priceBdt    Int                                   // pre-computed from pricePerMl at creation,
-                                                      // editable by hand if you want to round nicely
-  stockQty    Int          @default(0)
+  size        VariantSize
+  priceBdt    Int
+  stockQty    Int          @default(0)              // admin-facing stock tracking; does not gate ordering
   sku         String?      @unique
 
   orderItems  OrderItem[]
@@ -129,15 +119,13 @@ model OrderItem {
   orderId           String
   order             Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  productId         String                          // always set, even for custom decants
+  productId         String
   product           Product         @relation(fields: [productId], references: [id])
 
-  productVariantId  String?                         // set for preset sizes; null for custom
+  productVariantId  String?
   productVariant    ProductVariant? @relation(fields: [productVariantId], references: [id])
 
-  customMl          Int?                            // set only when this was a custom amount
-
-  label             String                          // snapshot, e.g. "10ml Decant" or "22ml Custom Decant"
+  label             String                          // snapshot, e.g. "10ml Decant"
   quantity          Int
   unitPriceBdtAtOrder Int                            // snapshot — protects history from future price changes
   totalPriceBdtAtOrder Int
@@ -146,44 +134,28 @@ model OrderItem {
 }
 ```
 
-## `lib/pricing.ts` (referenced by both the API route and the UI for live estimates)
-
-```ts
-export function pricePerMl(product: { actualBottleFullPriceBdt: number; actualBottleMl: number }) {
-  return product.actualBottleFullPriceBdt / product.actualBottleMl;
-}
-
-export function customDecantPrice(
-  product: { actualBottleFullPriceBdt: number; actualBottleMl: number },
-  ml: number,
-) {
-  return Math.round(pricePerMl(product) * ml);
-}
-```
-
-**Important:** the UI can use this for a live price preview as the customer types a custom `ml`
-value, but the `/api/orders` route must **recompute it server-side** from the product's current
-`actualBottleFullPriceBdt` / `actualBottleMl` before saving — never trust a price the client sends.
+## Pricing is stored, not computed
+Preset variant prices live in `ProductVariant.priceBdt` and are set by the import script or
+Prisma Studio. The `/api/orders` route uses the stored variant price directly — never trusts a
+price sent from the client.
 
 ## Design notes
 - **Notes as three separate arrays** (`topNotes`, `middleNotes`, `baseNotes`) instead of one
   flat list — matches how fragrance pyramids are actually described and lets the product page
   render the classic top/middle/base layout.
 - **`gender` as an enum**, not a string — keeps filtering reliable (`MEN` / `WOMEN` / `UNISEX`).
-- **`actualBottleMl` + `actualBottleFullPriceBdt` on `Product`**, not hardcoded to 100ml —
-  handles the 75ml/100ml/125ml reality directly, with `pricePerMl` as the single source of
-  truth for every decant price.
-- **`OrderItem.customMl`**: nullable, only populated for made-to-order custom decants. When set,
-  `productVariantId` is null; when a preset size is ordered, it's the reverse.
+- **`actualBottleMl` on `Product`** — handles the 75ml/100ml/125ml reality for labels and page
+  copy, with preset prices stored as `ProductVariant` rows.
+- **`Product.isAvailable` instead of deleting products**: `false` keeps the product listed but
+  marks it "Sold Out" and disables ordering on both client and server. Per-variant `stockQty`
+  is admin-facing tracking only and never gates ordering.
 - **Unit + total price snapshots on `OrderItem`**: protects order history if you later change a
   bottle's price or restock at a different cost.
-- **`isActive` instead of deleting products**: keeps order history intact.
 
 ## Managing inventory day-to-day (Phase 1)
 ```bash
 bunx prisma studio
 ```
 Point it at your production `DATABASE_URL` (Neon connection string). Add products, set
-`actualBottleMl` / `actualBottleFullPriceBdt`, then add `ProductVariant` rows for the preset
-sizes you're pre-bottling, with prices computed via `pricePerMl` (round however you like — e.g.
-to the nearest ৳10). No custom decant rows needed — those are calculated live.
+`actualBottleMl`, then add `ProductVariant` rows for the preset sizes. Toggle `isAvailable`
+on a product to take a listing out of sale without removing it.

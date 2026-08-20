@@ -8,8 +8,8 @@ manual (you confirm every order by phone/WhatsApp before shipping — this is in
 gap).
 
 ## Goals (Phase 1)
-1. Public catalog: browse products, see variants (preset decant sizes, custom decant amount,
-   full bottle), prices, stock.
+1. Public catalog: browse products, see variants (preset decant sizes, full bottle), prices,
+   availability.
 2. Product detail page with an order form (COD, no payment gateway yet).
 3. Order saved to a real database.
 4. You get pinged on WhatsApp the moment an order comes in.

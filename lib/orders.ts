@@ -1,14 +1,14 @@
 import { ZodError } from "zod";
 import { prisma } from "@/lib/prisma";
-import { customDecantPrice } from "@/lib/pricing";
 import { variantLabel } from "@/lib/products";
 import { orderSchema } from "@/lib/validations";
 import { sendTelegramMessage } from "@/lib/telegram";
+import { getEnvironment } from "@/lib/environment";
+import { isVariantOrderable } from "@/lib/order-rules";
 
 export type OrderInput = {
   productId: string;
-  productVariantId?: string;
-  customMl?: number;
+  productVariantId: string;
   quantity: number;
   customerName: string;
   phone: string;
@@ -21,7 +21,7 @@ export type OrderResult =
   | { success: true; orderNumber: string }
   | { success: false; message: string; errors?: unknown };
 
-const ENVIRONMENT = process.env.NODE_ENV || "development";
+const ENVIRONMENT = getEnvironment();
 const MESSAGE_TYPE =
   ENVIRONMENT === "production" ? "Order confirmed" : "Order confirmed (Development)";
 
@@ -44,62 +44,40 @@ export async function placeOrder(input: OrderInput): Promise<OrderResult> {
     where: { id: body.productId },
   });
 
-  if (!product || !product.isActive) {
+  if (!product) {
     return { success: false, message: "Product not found." };
   }
 
-  const orderNumber = createOrderNumber();
-  let label: string;
-  let unitPriceBdt: number;
-  let productVariantId: string | null = null;
-  let customMl: number | null = null;
-
-  if (body.productVariantId) {
-    const variant = await prisma.productVariant.findFirst({
-      where: { id: body.productVariantId, productId: product.id },
-    });
-
-    if (!variant) {
-      return { success: false, message: "Variant not found." };
-    }
-
-    if (variant.stockQty < body.quantity) {
-      return { success: false, message: "Variant is sold out." };
-    }
-
-    label = variantLabel(variant.size, product.actualBottleMl);
-    unitPriceBdt = variant.priceBdt;
-    productVariantId = variant.id;
-  } else {
-    const ml = body.customMl ?? 0;
-    label = `${ml}ml Custom Decant`;
-
-    const fullBottleVariant = await prisma.productVariant.findFirst({
-      where: { productId: product.id, size: "FULL_BOTTLE" },
-    });
-
-    if (!fullBottleVariant) {
-      return { success: false, message: "Full bottle pricing not found." };
-    }
-
-    unitPriceBdt = customDecantPrice(
-      fullBottleVariant.priceBdt,
-      product.actualBottleMl,
-      ml,
-    );
-    customMl = ml;
+  if (!product.isAvailable) {
+    return { success: false, message: "Product is not available." };
   }
+
+  const orderNumber = createOrderNumber();
+
+  const variant = await prisma.productVariant.findFirst({
+    where: { id: body.productVariantId, productId: product.id },
+  });
+
+  if (!variant) {
+    return { success: false, message: "Variant not found." };
+  }
+
+  if (!isVariantOrderable(variant.size)) {
+    return { success: false, message: "This size is not orderable right now." };
+  }
+
+  const label = variantLabel(variant.size, product.actualBottleMl);
+  const unitPriceBdt = variant.priceBdt;
+  const productVariantId = variant.id;
 
   const totalPriceBdtAtOrder = unitPriceBdt * body.quantity;
   const productName = `${product.brand} ${product.name}`;
-
-  const environment = process.env.NODE_ENV ?? "development";
 
   const order = await prisma.$transaction(async (tx) => {
     const createdOrder = await tx.order.create({
       data: {
         orderNumber,
-        environment,
+        environment: ENVIRONMENT,
         customerName: body.customerName,
         phone: body.phone,
         address: body.address,
@@ -110,7 +88,6 @@ export async function placeOrder(input: OrderInput): Promise<OrderResult> {
           create: {
             productId: product.id,
             productVariantId,
-            customMl,
             label,
             quantity: body.quantity,
             unitPriceBdtAtOrder: unitPriceBdt,
@@ -120,12 +97,10 @@ export async function placeOrder(input: OrderInput): Promise<OrderResult> {
       },
     });
 
-    if (productVariantId) {
-      await tx.productVariant.update({
-        where: { id: productVariantId },
-        data: { stockQty: { decrement: body.quantity } },
-      });
-    }
+    await tx.productVariant.update({
+      where: { id: productVariantId },
+      data: { stockQty: { decrement: body.quantity } },
+    });
 
     return createdOrder;
   });

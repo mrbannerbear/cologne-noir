@@ -16,7 +16,7 @@ const PRODUCT_COLUMNS = [
   "baseNotes",
   "actualBottleMl",
   "images",
-  "isActive",
+  "isAvailable",
   "size",
   "priceBdt",
   "stockQty",
@@ -50,7 +50,8 @@ const HEADER_ALIASES: Record<string, string> = {
   stock: "stockQty",
   stockqty: "stockQty",
   stockquantity: "stockQty",
-  active: "isActive",
+  active: "isAvailable",
+  isavailable: "isAvailable",
   fullbottle: "actualBottleFullPriceBdt",
   fullbottleprice: "actualBottleFullPriceBdt",
   fullbottlepricebdt: "actualBottleFullPriceBdt",
@@ -183,7 +184,7 @@ interface ParsedProduct {
   baseNotes: string[];
   actualBottleMl: number;
   images: string[];
-  isActive: boolean;
+  isAvailable: boolean;
   variants: ParsedVariant[];
 }
 
@@ -320,7 +321,7 @@ export function parseProduct(slug: string, rows: Record<string, string>[], lineN
     baseNotes: pickList("baseNotes"),
     actualBottleMl,
     images: pickList("images"),
-    isActive: parseBool(pickNonEmpty(rows, "isActive")),
+    isAvailable: parseBool(pickNonEmpty(rows, "isAvailable")),
     variants,
   };
 }
@@ -413,7 +414,7 @@ export async function importProductsFromFile(filePath: string): Promise<ImportSu
             baseNotes: product.baseNotes,
             actualBottleMl: product.actualBottleMl,
             images: product.images,
-            isActive: product.isActive,
+            isAvailable: product.isAvailable,
             updatedAt: new Date(),
           },
           create: {
@@ -428,7 +429,7 @@ export async function importProductsFromFile(filePath: string): Promise<ImportSu
             baseNotes: product.baseNotes,
             actualBottleMl: product.actualBottleMl,
             images: product.images,
-            isActive: product.isActive,
+            isAvailable: product.isAvailable,
           },
         });
 
@@ -496,7 +497,7 @@ async function main() {
     console.error("CSV file not found:", filePath);
     console.error("\nPlace your CSV at data/products.csv (or pass a path: tsx scripts/import-products.ts <file>)");
     console.error("\nRequired columns: slug, brand, name, gender, actualBottleMl");
-    console.error("Optional product columns: concentration, description, topNotes, middleNotes, baseNotes, images, isActive");
+    console.error("Optional product columns: concentration, description, topNotes, middleNotes, baseNotes, images, isAvailable");
     console.error("Variant columns (one row per size): size, priceBdt, stockQty, sku");
     console.error("\nNotes/arrays use \"|\" as separator (or commas inside quotes). Example: topNotes=\"Bergamot|Lemon|Lavender\"");
     console.error("size accepts: DECANT_5ML, DECANT_10ML, DECANT_100ML, FULL_BOTTLE (or 5ml/10ml/100ml/full).");

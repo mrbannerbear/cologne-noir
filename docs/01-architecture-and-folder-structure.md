@@ -17,7 +17,7 @@ Instagram (@cologne.noir) --> traffic --> Next.js site (Vercel, Bun runtime)
 - The site is a standard Next.js App Router app. Server Components fetch products directly
   from the database (no separate API layer needed for reads).
 - The only API route in Phase 1 is `POST /api/orders`, which validates input, computes final
-  price server-side (including custom decant amounts — see `03-features-and-user-flows.md`),
+  price server-side (see `03-features-and-user-flows.md`),
   writes to the database, and fires a WhatsApp notification.
 - You manage products (add/edit/mark sold out) by connecting Prisma Studio to the production
   database and editing rows directly.
@@ -54,13 +54,13 @@ cologne-noir/
 │   ├── hero-split.tsx            # split-screen photographic hero
 │   ├── product-grid.tsx
 │   ├── notes-pyramid.tsx         # top/middle/base notes display
-│   ├── variant-selector.tsx      # presets (5/10/15ml, full bottle) + custom ml input
+│   ├── variant-selector.tsx      # presets (5/10/15ml, full bottle)
 │   └── order-form.tsx            # client component, calls /api/orders
 │
 ├── lib/
+│   ├── environment.ts            # VERCEL_ENV/normalized env detection (production/preview/development)
 │   ├── prisma.ts                 # Prisma client singleton
 │   ├── whatsapp.ts                # sendWhatsAppNotification() helper
-│   ├── pricing.ts                 # pricePerMl(), customDecantPrice() — see 02-database-schema.md
 │   ├── validations.ts            # Zod schemas (order form, etc.)
 │   └── format.ts                 # price/currency formatting (BDT)
 │
@@ -87,9 +87,9 @@ cologne-noir/
 - Server Components by default. Only mark a component `"use client"` if it needs interactivity
   (the order form, the variant selector, scroll-triggered fade animations, mobile nav toggle).
 - All database access goes through `lib/prisma.ts` — never instantiate `PrismaClient` elsewhere.
-- All external input (the order form, including custom decant ml) is validated with Zod in
-  `lib/validations.ts` **and** re-priced server-side in `lib/pricing.ts` — never trust a price
-  sent from the client.
+- All external input (the order form) is validated with Zod in
+  `lib/validations.ts` **and** priced server-side from the stored variant price — never trust a
+  price sent from the client.
 - Currency is BDT (৳), formatted via `lib/format.ts`.
 - No client-side state library needed (no cart in Phase 1) — component-local state is enough.
 - Package manager is **Bun** throughout: `bun install`, `bun add`, `bun run dev`, `bunx <tool>`

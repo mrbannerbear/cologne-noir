@@ -42,8 +42,13 @@ single source of truth for secrets in `.env.local` (Next.js's native convention)
 Create `.env.local` (never commit this — it's gitignored by default):
 
 ```
-# From Neon dashboard, after creating a project
-DATABASE_URL="postgresql://user:password@host/dbname?sslmode=require"
+# From Neon dashboard, after creating a project.
+# Use one of these two — the code picks per environment:
+#   - DATABASE_URL              explicit override (wins over the two below)
+#   - DATABASE_PROD_URL         used when the environment is production
+#   - DATABASE_DEVELOPMENT_URL  used for local dev / preview / non-production
+DATABASE_PROD_URL="postgresql://user:password@prod-host/dbname?sslmode=require"
+DATABASE_DEVELOPMENT_URL="postgresql://user:password@dev-host/dbname?sslmode=require"
 
 # WhatsApp — Option A (CallMeBot, see 05-whatsapp-notifications.md)
 WHATSAPP_CALLMEBOT_PHONE="8801XXXXXXXXX"
@@ -58,6 +63,11 @@ WHATSAPP_CALLMEBOT_APIKEY="123456"
 # From Vercel Blob dashboard, once you create a Blob store
 BLOB_READ_WRITE_TOKEN="vercel_blob_rw_..."
 ```
+
+The database URL is resolved in `lib/database-url.ts` (`prisma.config.ts` keeps an identical
+copy for CLI use): an explicit `DATABASE_URL` always wins; otherwise it selects
+`DATABASE_PROD_URL` for production and `DATABASE_DEVELOPMENT_URL` everywhere else
+(`VERCEL_ENV` is Vercel's injected value; `NODE_ENV` is the local fallback).
 
 Create `.env.local.example` with the same keys but placeholder values, and commit *that*
 instead — so anyone (or any agent) setting up the project knows what's needed.
@@ -101,9 +111,9 @@ as in Vercel) to add/edit products and update stock without touching code.
 
 ## Pre-launch checklist
 - [ ] Seed at least the products currently in your last 8 IG posts, with correct
-      `actualBottleMl` / `actualBottleFullPriceBdt` for each
-- [ ] Test the full order flow end-to-end for **both** a preset size and a custom ml amount —
-      confirm the server-computed price matches expectations in both cases
+      `actualBottleMl` / `isAvailable` for each
+- [ ] Test the full order flow end-to-end for a preset size — confirm the server-side price
+      matches the stored variant price
 - [ ] Confirm the WhatsApp alert arrives (Option A first)
 - [ ] Test responsiveness on an actual phone at minimum — not just browser dev tools
 - [ ] Confirm glass/backdrop-blur effects render acceptably on a mid-range Android browser

@@ -40,13 +40,13 @@ model Product {
   baseNotes                String[]
   actualBottleMl           Int
   images                   String[]
-  isActive                 Boolean         @default(true)
+  isAvailable              Boolean         @default(true)
   createdAt                DateTime        @default(now())
   updatedAt                DateTime        @updatedAt
   variants                 ProductVariant[]
   orderItems               OrderItem[]
 
-  @@index([isActive])
+  @@index([isAvailable])
   @@index([gender])
 }
 
@@ -91,7 +91,6 @@ model OrderItem {
   product              Product         @relation(fields: [productId], references: [id])
   productVariantId     String?
   productVariant       ProductVariant? @relation(fields: [productVariantId], references: [id], onDelete: SetNull)
-  customMl             Int?
   label                String
   quantity             Int
   unitPriceBdtAtOrder  Int

@@ -30,7 +30,9 @@ export function Sheet({ open, onClose, title, children }: SheetProps) {
     window.addEventListener("keydown", onKeyDown);
 
     const previouslyFocused = document.activeElement as HTMLElement | null;
-    panelRef.current?.focus();
+    if (!panelRef.current?.contains(document.activeElement)) {
+      panelRef.current?.focus();
+    }
 
     return () => {
       document.body.style.overflow = previousOverflow;

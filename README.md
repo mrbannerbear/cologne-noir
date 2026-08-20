@@ -12,7 +12,7 @@ while keeping fulfillment personal: every order is confirmed by hand before it s
 ## What this is
 
 - Browse fragrances by gender, brand, and notes (top / middle / base pyramid)
-- Order preset decant sizes (5ml / 10ml / 15ml) or a custom amount, priced automatically from
+- Order preset decant sizes (5ml / 10ml / 15ml) and full bottles, priced automatically from
   the bottle's actual size (75ml / 100ml / 125ml — not everything is 100ml)
 - Simple cash-on-delivery order form — no cart, no payment gateway yet, by design
 - Instant WhatsApp alert on every new order

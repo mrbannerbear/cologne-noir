@@ -14,6 +14,17 @@
 | About / Shipping info page | Should | Authenticity promise, delivery areas, COD explanation |
 | Search | Could | Only worth it once catalog > ~20 products |
 
+## Hero featured fragrance (code-controlled)
+
+The homepage hero ("Featured Bottle") is controlled by a single exported constant
+`FEATURED_FRAGRANCE` in `lib/products.ts`. Set it to a slug (`marwa-edp`), a name
+(`Marwa`), or a label (`Marwa EDP` / `Arabiyat Prestige Marwa`) and it becomes the hero
+whenever that product is available and has a cover image. If the constant is empty, or the
+named product is unavailable/has no image, `getHeroProduct()` falls back to the most
+recently added product. This is deliberately code-only for now — it reads via
+`getHeroProduct()` in one place, so it can move behind auth later as a real admin flag
+without touching the hero component.
+
 ## User flow: Browse → Order
 
 1. Customer lands on homepage (likely from an IG bio link or story swipe-up).

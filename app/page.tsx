@@ -7,7 +7,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { FadeIn } from "@/components/fade-in";
 import { HeroImage } from "@/components/hero-image";
 import type { Metadata } from "next";
-import { getCollectionStats, getFeaturedProducts } from "@/lib/products";
+import { getCollectionStats, getFeaturedProducts, getHeroProduct } from "@/lib/products";
 import { faqPreview } from "@/lib/faq";
 import { FAQPreview } from "@/components/faq-preview";
 
@@ -75,7 +75,7 @@ function HeroVisualSkeleton() {
 }
 
 async function HeroVisual() {
-  const [heroProduct] = await getFeaturedProducts(1);
+  const heroProduct = await getHeroProduct();
 
   if (!heroProduct) {
     return <HeroVisualSkeleton />;

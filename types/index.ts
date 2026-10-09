@@ -88,6 +88,11 @@ export type OfferView = {
   items: OfferItemView[];
 };
 
+export type OfferDetailView = OfferView & {
+  eventDescription: string | null;
+  products: ProductWithVariants[];
+};
+
 export type OfferOrderFormData = {
   offerId: string;
   size: BundleSize;

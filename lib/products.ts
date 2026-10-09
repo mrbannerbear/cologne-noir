@@ -167,6 +167,15 @@ export async function getProductBySlug(slug: string) {
   return toProductView(product);
 }
 
+export async function getProductsBySlugs(slugs: string[]) {
+  const products = await prisma.product.findMany({
+    where: { slug: { in: slugs } },
+    include: { variants: { orderBy: { size: "asc" } } },
+  });
+
+  return products.map(toProductView);
+}
+
 export async function getCollectionStats() {
   const [productCount, variantStats] = await Promise.all([
     prisma.product.count(),

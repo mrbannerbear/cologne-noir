@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { formatBdt } from "@/lib/format";
-import { OfferOrder } from "@/components/offer-order";
+import { OfferCollage } from "@/components/offer-collage";
+import { buttonVariants } from "@/components/ui/button";
 import type { OfferView } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -14,8 +14,6 @@ type OfferHeroCarouselProps = {
 };
 
 const AUTOPLAY_MS = 6000;
-
-const PRINT_ROTATIONS = ["-rotate-1", "rotate-2", "rotate-1", "-rotate-2"] as const;
 
 export function OfferHeroCarousel({ offers }: OfferHeroCarouselProps) {
   const [index, setIndex] = useState(0);
@@ -33,10 +31,10 @@ export function OfferHeroCarousel({ offers }: OfferHeroCarouselProps) {
   const prev = useCallback(() => goTo(index - 1), [goTo, index]);
 
   useEffect(() => {
-    if (paused || count <= 1) return;
+    if (prefersReducedMotion || paused || count <= 1) return;
     const timer = setInterval(() => setIndex((i) => (i + 1) % count), AUTOPLAY_MS);
     return () => clearInterval(timer);
-  }, [count, paused]);
+  }, [count, paused, prefersReducedMotion]);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -63,7 +61,7 @@ export function OfferHeroCarousel({ offers }: OfferHeroCarouselProps) {
       <div className="relative aspect-square lg:aspect-auto bg-surface-paper border-b border-border lg:border-b-0 lg:border-r overflow-hidden">
         <motion.div
           style={{ y: parallaxY }}
-          className="absolute inset-0 flex items-center justify-center p-5 sm:p-8"
+          className="absolute inset-0 flex items-center justify-center p-2.5 sm:p-8"
         >
           <AnimatePresence mode="wait">
             <motion.div
@@ -74,49 +72,7 @@ export function OfferHeroCarousel({ offers }: OfferHeroCarouselProps) {
               transition={{ duration: 0.5, ease: [0.4, 0, 0.6, 1] }}
               className="flex items-center"
             >
-              {offer.items.length > 0 ? (
-                offer.items.map((item, i) => {
-                  const image = item.images[0];
-                  return (
-                    <Link
-                      key={item.slug}
-                      href={`/products/${item.slug}`}
-                      className={cn(
-                        "relative w-40 sm:w-52 lg:w-56 shrink-0 bg-background border border-border p-2 sm:p-2.5",
-                        i > 0 && "-ml-8 sm:-ml-10 lg:-ml-12",
-                        PRINT_ROTATIONS[i % PRINT_ROTATIONS.length],
-                      )}
-                    >
-                      <div className="relative aspect-square overflow-hidden bg-background-warm">
-                        {image ? (
-                          <Image
-                            src={image}
-                            alt={`${item.brand} ${item.name}`}
-                            fill
-                            sizes="(max-width: 1024px) 40vw, 20vw"
-                            className="object-cover transition-opacity duration-300 group-hover:opacity-85"
-                          />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center p-2">
-                            <span className="text-center font-display text-[10px] font-light text-muted">
-                              {item.brand}
-                              <br />
-                              {item.name}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      <p className="mt-2 truncate font-display text-xs font-light text-foreground">
-                        {item.brand} {item.name}
-                      </p>
-                    </Link>
-                  );
-                })
-              ) : (
-                <span className="font-display text-4xl italic leading-none tracking-tight text-muted select-none">
-                  Cologne Noir
-                </span>
-              )}
+              <OfferCollage items={offer.items} />
             </motion.div>
           </AnimatePresence>
         </motion.div>
@@ -202,7 +158,12 @@ export function OfferHeroCarousel({ offers }: OfferHeroCarouselProps) {
         </div>
 
         <div>
-          <OfferOrder offer={offer} showPriceLine={false} />
+          <Link
+            href={`/offers/${offer.slug}`}
+            className={buttonVariants({ variant: "primary", className: "w-full min-h-11 sm:w-auto" })}
+          >
+            View the Bundle
+          </Link>
         </div>
       </div>
     </section>

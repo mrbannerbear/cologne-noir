@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getActiveOffers } from "@/lib/offers";
 import { formatBdt } from "@/lib/format";
-import { OfferOrder } from "@/components/offer-order";
+import { buttonVariants } from "@/components/ui/button";
 
 export async function OffersSection() {
   const offers = await getActiveOffers();
@@ -93,8 +93,13 @@ export async function OffersSection() {
               </div>
             </div>
 
-            <div>
-              <OfferOrder offer={offer} />
+            <div className="border-t border-border pt-5">
+              <Link
+                href={`/offers/${offer.slug}`}
+                className={buttonVariants({ variant: "primary", className: "min-w-40" })}
+              >
+                View Bundle
+              </Link>
             </div>
           </article>
         ))}

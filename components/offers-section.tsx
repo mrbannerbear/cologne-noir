@@ -35,12 +35,13 @@ export async function OffersSection() {
                 {offer.occasion ? (
                   <p className="label-caps text-[10px] text-muted">{offer.occasion}</p>
                 ) : null}
-                <h3 className="font-display text-2xl font-light text-foreground">
+                <h3 className="font-display text-xl sm:text-2xl font-light text-foreground leading-tight">
                   {offer.name}
                 </h3>
                 <p className="label-caps text-[10px] text-muted">{offer.tagline}</p>
               </div>
               <div className="sm:text-right">
+                <p className="label-caps text-[9px] text-muted">Now 5% off</p>
                 <p className="font-mono text-sm text-foreground">{formatBdt(offer.price5mlBdt)}</p>
                 <p className="font-mono text-xs text-muted">5ml set</p>
                 <p className="font-mono text-sm text-foreground pt-1">{formatBdt(offer.price10mlBdt)}</p>

@@ -14,6 +14,10 @@ type OfferHeroCarouselProps = {
 };
 
 const AUTOPLAY_MS = 6000;
+const OFFER_BASE_PRICES: Record<string, { price5mlBdt: number; price10mlBdt: number }> = {
+  "summer-bundle-1": { price5mlBdt: 855, price10mlBdt: 1510 },
+  "summer-bundle-2": { price5mlBdt: 750, price10mlBdt: 1345 },
+};
 
 export function OfferHeroCarousel({ offers }: OfferHeroCarouselProps) {
   const [index, setIndex] = useState(0);
@@ -49,6 +53,7 @@ export function OfferHeroCarousel({ offers }: OfferHeroCarouselProps) {
   if (count === 0) return null;
 
   const offer = offers[index]!;
+  const basePrices = OFFER_BASE_PRICES[offer.slug];
 
   return (
     <section
@@ -100,7 +105,7 @@ export function OfferHeroCarousel({ offers }: OfferHeroCarouselProps) {
       {/* Right Side: Minimal Editorial Information */}
       <div className="relative flex flex-col justify-between bg-background-warm p-6 sm:p-10 lg:p-14 gap-8">
         {count > 1 ? (
-          <div className="absolute right-6 top-6 flex items-center gap-1 sm:right-10 sm:top-10 lg:right-14 lg:top-14">
+          <div className="absolute right-6 top-6 hidden items-center gap-1 lg:right-14 lg:top-14 lg:flex">
             <button
               type="button"
               onClick={prev}
@@ -139,7 +144,7 @@ export function OfferHeroCarousel({ offers }: OfferHeroCarouselProps) {
                 {offer.occasion ? (
                   <p className="label-caps text-[10px] text-muted">{offer.occasion}</p>
                 ) : null}
-                <h1 className="font-display text-[clamp(2.25rem,5vw,3.5rem)] font-light leading-[1.08] tracking-[-0.02em] text-foreground">
+                <h1 className="font-display text-[clamp(1.75rem,6.4vw,3.5rem)] font-light leading-[1.08] tracking-[-0.02em] text-foreground">
                   {offer.name}
                 </h1>
                 <p className="font-display text-sm italic text-muted">{offer.tagline}</p>
@@ -149,9 +154,17 @@ export function OfferHeroCarousel({ offers }: OfferHeroCarouselProps) {
                 <p className="label-caps text-[10px] text-muted">
                   Bundle of {offer.items.length} · 5ml / 10ml
                 </p>
+                {basePrices ? (
+                  <p className="mt-1 label-caps text-[9px] text-muted">
+                    <span className="line-through">{formatBdt(basePrices.price5mlBdt)}</span>
+                    {" · "}
+                    <span className="line-through">{formatBdt(basePrices.price10mlBdt)}</span>
+                  </p>
+                ) : null}
                 <p className="mt-2 font-mono text-sm text-foreground">
                   {formatBdt(offer.price5mlBdt)} · {formatBdt(offer.price10mlBdt)}
                 </p>
+                <p className="mt-1 label-caps text-[9px] text-muted">5% off current bundle pricing</p>
               </div>
             </motion.div>
           </AnimatePresence>

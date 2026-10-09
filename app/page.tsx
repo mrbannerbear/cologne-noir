@@ -258,7 +258,8 @@ export default function Home() {
             href="/products"
             className="label-caps text-xs text-muted hover:text-foreground transition-colors editorial-link"
           >
-            Catalog →
+            <span className="underline underline-offset-[3px] lg:no-underline">Catalog</span>
+            <span aria-hidden="true" className="hidden lg:inline">{" "}→</span>
           </Link>
         </div>
         <Suspense fallback={<ProductGridSkeleton />}>
@@ -279,7 +280,8 @@ export default function Home() {
             href="/faq"
             className="label-caps text-xs text-muted hover:text-foreground transition-colors editorial-link"
           >
-            Full FAQ →
+            <span className="underline underline-offset-[3px] lg:no-underline">Full FAQ</span>
+            <span aria-hidden="true" className="hidden lg:inline">{" "}→</span>
           </Link>
         </div>
         <div className="border-t border-border">

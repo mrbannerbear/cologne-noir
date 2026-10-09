@@ -3,6 +3,76 @@ import { prisma } from "@/lib/prisma";
 import type { GenderFilter, ProductVariantView, ProductWithVariants } from "@/types";
 import { isVariantVisible } from "@/lib/order-rules";
 
+/* Hero feature control — set FEATURED_FRAGRANCE to anything that identifies a
+   current product (a slug like "marwa-edp", or a human label like "Marwa EDP"
+   / "Arabiyat Prestige Marwa"), and it becomes the homepage hero whenever the
+   product is available. Empty string → always fall back to the latest product.
+   This is a code-only setting for now; later it moves behind auth as an admin
+   flag, and getHeroProduct() is the single place that reads it. */
+export const FEATURED_FRAGRANCE = "Marwa EDP";
+
+function normalizeLabel(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim().replace(/\s+/g, " ");
+}
+
+async function findFeaturedByLabel(needle: string) {
+  const products = await prisma.product.findMany({
+    where: { isAvailable: true },
+    include: { variants: { orderBy: { size: "asc" } } },
+  });
+
+  return (
+    products.find((product) => {
+      const brand = product.brand;
+      const name = product.name;
+      const concentration = product.concentration;
+
+      const candidates = [
+        normalizeLabel([name, concentration].filter(Boolean).join(" ")),
+        normalizeLabel([brand, name, concentration].filter(Boolean).join(" ")),
+        normalizeLabel([brand, name].filter(Boolean).join(" ")),
+        normalizeLabel(name),
+        normalizeLabel(product.slug.replace(/-/g, " ")),
+      ];
+
+      return candidates.includes(needle);
+    }) ?? null
+  );
+}
+
+async function getFeaturedProduct() {
+  const needle = normalizeLabel(FEATURED_FRAGRANCE);
+  if (!needle) return null;
+
+  const slugForm = needle.replace(/\s+/g, "-");
+
+  const featured =
+    (await prisma.product.findUnique({
+      where: { slug: slugForm },
+      include: { variants: { orderBy: { size: "asc" } } },
+    })) ??
+    (await findFeaturedByLabel(needle));
+
+  if (!featured || !featured.isAvailable || featured.images.length === 0) {
+    return null;
+  }
+
+  return toProductView(featured);
+}
+
+export async function getHeroProduct() {
+  const featured = await getFeaturedProduct();
+  if (featured) return featured;
+
+  const [latest] = await prisma.product.findMany({
+    include: { variants: { orderBy: { size: "asc" } } },
+    orderBy: { createdAt: "desc" },
+    take: 1,
+  });
+
+  return latest ? toProductView(latest) : null;
+}
+
 export function variantLabel(size: string, bottleMl?: number) {
   if (size === "FULL_BOTTLE") {
     return bottleMl ? `Full Bottle (${bottleMl}ml)` : "Full Bottle";
@@ -95,6 +165,15 @@ export async function getProductBySlug(slug: string) {
   }
 
   return toProductView(product);
+}
+
+export async function getProductsBySlugs(slugs: string[]) {
+  const products = await prisma.product.findMany({
+    where: { slug: { in: slugs } },
+    include: { variants: { orderBy: { size: "asc" } } },
+  });
+
+  return products.map(toProductView);
 }
 
 export async function getCollectionStats() {

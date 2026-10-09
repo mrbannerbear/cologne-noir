@@ -75,12 +75,51 @@ model Order {
   environment  String       @default("production")
   status       OrderStatus  @default(PENDING)
   totalBdt     Int
+  offerId      String?
+  offer        Offer?       @relation(fields: [offerId], references: [id], onDelete: SetNull)
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   items        OrderItem[]
 
   @@index([status])
   @@index([createdAt])
+  @@index([offerId])
+}
+
+model OfferEvent {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String?  @db.Text
+  isActive    Boolean  @default(true)
+  startsAt    DateTime?
+  endsAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  offers      Offer[]
+
+  @@index([isActive])
+}
+
+model Offer {
+  id            String      @id @default(cuid())
+  slug          String      @unique
+  name          String
+  tagline       String
+  occasion      String?
+  description   String?     @db.Text
+  productSlugs  String[]
+  price5mlBdt   Int
+  price10mlBdt  Int
+  sortOrder     Int         @default(0)
+  isActive      Boolean     @default(true)
+  eventId       String
+  event         OfferEvent  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  orders        Order[]
+
+  @@index([eventId, isActive])
 }
 
 model OrderItem {

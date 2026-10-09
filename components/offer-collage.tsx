@@ -66,16 +66,16 @@ export function OfferCollage({ items }: { items: OfferItemView[] }) {
   return (
     <>
       {/* Mobile: two staggered rows of larger prints */}
-      <div className="flex flex-col items-center gap-1 sm:hidden">
+      <div className="flex w-full flex-col items-center gap-1 sm:hidden">
         {rows.map((row, r) => (
-          <div key={r} className="flex items-center">
+          <div key={r} className="flex w-full items-center justify-center">
             {row.map((item, c) => (
               <Print
                 key={item.slug}
                 item={item}
                 className={cn(
-                  "w-36",
-                  c > 0 && "-ml-3",
+                  "w-[31vw] min-w-[5.5rem] max-w-[6.75rem]",
+                  c > 0 && "-ml-2",
                   (r + c) % 2 === 0 ? "-rotate-1" : "rotate-2",
                 )}
               />

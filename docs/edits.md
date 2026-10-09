@@ -15,7 +15,7 @@ Fresh, clean, all-day scents for the hot season.
 - Arabiyat Prestige Marwa
 - Rayhaan Azul
 
-**Price:** ৳855 BDT (5ml) · ৳1,510 BDT (10ml)
+**Price:** ৳810 BDT (5ml) · ৳1,435 BDT (10ml)
 
 ## Summer Bundle 2
 
@@ -29,4 +29,4 @@ Bold, fresh, versatile scents for summer rotation.
 - Rayhaan Aquatica
 - Rasasi Dareej Sport
 
-**Price:** ৳750 BDT (5ml) · ৳1,345 BDT (10ml)
+**Price:** ৳710 BDT (5ml) · ৳1,280 BDT (10ml)

@@ -90,6 +90,7 @@ export function OfferOrder({ offer, showPriceLine = true }: OfferOrderProps) {
           <div className="flex flex-wrap items-end gap-4 justify-between border-t border-border pt-6">
             <div>
               <p className="label-caps text-[10px] text-muted">Bundle Price</p>
+              <p className="mt-1 label-caps text-[9px] text-muted">Includes 5% discount</p>
               <p className="mt-1 font-display text-2xl font-light text-foreground">{formatBdt(total)}</p>
             </div>
             <Button

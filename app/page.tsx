@@ -7,7 +7,10 @@ import { buttonVariants } from "@/components/ui/button";
 import { FadeIn } from "@/components/fade-in";
 import { HeroImage } from "@/components/hero-image";
 import type { Metadata } from "next";
-import { getCollectionStats, getFeaturedProducts } from "@/lib/products";
+import { getCollectionStats, getFeaturedProducts, getHeroProduct } from "@/lib/products";
+import { getActiveOffers } from "@/lib/offers";
+import { OfferHeroCarousel } from "@/components/offer-hero-carousel";
+import { cn } from "@/lib/utils";
 import { faqPreview } from "@/lib/faq";
 import { FAQPreview } from "@/components/faq-preview";
 
@@ -75,7 +78,7 @@ function HeroVisualSkeleton() {
 }
 
 async function HeroVisual() {
-  const [heroProduct] = await getFeaturedProducts(1);
+  const heroProduct = await getHeroProduct();
 
   if (!heroProduct) {
     return <HeroVisualSkeleton />;
@@ -106,6 +109,119 @@ async function ActiveCatalogCount() {
   return <>{`${stats.totalProducts} scents`}</>;
 }
 
+/* Same box as the hero so Suspense never causes reflow. */
+function HeroSkeleton() {
+  return (
+    <div
+      aria-hidden="true"
+      className="grid overflow-hidden border border-border lg:grid-cols-2 min-h-125"
+    >
+      <div className="aspect-square lg:aspect-auto bg-surface-paper border-b border-border lg:border-b-0 lg:border-r overflow-hidden">
+        <div className="flex h-full items-center justify-center p-8">
+          <div className="flex items-center">
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className={cn(
+                  "h-44 w-32 sm:h-56 sm:w-40 lg:h-64 lg:w-48 bg-background border border-border p-2",
+                  i > 0 && "-ml-8 sm:-ml-10",
+                )}
+              >
+                <div className="aspect-square bg-border/60" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="relative flex flex-col justify-between gap-8 bg-background-warm p-6 sm:p-10 lg:p-14">
+        <div className="space-y-5">
+          <div className="h-6 w-40 bg-border/60" />
+          <div className="h-10 w-3/4 bg-border/60" />
+          <div className="h-3 w-full max-w-md bg-border/60" />
+          <div className="h-3 w-2/3 max-w-sm bg-border/60" />
+        </div>
+        <div className="h-11 w-full max-w-48 bg-border/60" />
+      </div>
+    </div>
+  );
+}
+
+async function HomeHero() {
+  const offers = await getActiveOffers();
+
+  if (offers.length > 0) {
+    return <OfferHeroCarousel offers={offers} />;
+  }
+
+  return (
+    /* Editorial Hero: Split-Screen Layout */
+    <section className="grid overflow-hidden border border-border lg:grid-cols-2 min-h-125">
+
+      {/* Left Side: Photographic or Design Visual */}
+      <div className="relative aspect-square lg:aspect-auto bg-surface-paper border-b border-border lg:border-b-0 lg:border-r">
+        <Suspense fallback={<HeroVisualSkeleton />}>
+          <HeroVisual />
+        </Suspense>
+      </div>
+
+      {/* Right Side: Editorial Information — static, paints first */}
+      <div className="flex flex-col justify-between bg-background-warm p-6 sm:p-10 lg:p-14 gap-8">
+        <div className="space-y-6">
+          <div className="inline-flex items-center gap-2 border border-border px-3 py-1 text-[10px] label-caps text-muted bg-background">
+            <span className="h-1.5 w-1.5 rounded-full bg-foreground/60" />
+            Bangladesh · COD · verified
+          </div>
+
+          <div className="space-y-4">
+            <h1 className="font-display text-[clamp(2.25rem,5vw,3.5rem)] font-light leading-[1.08] tracking-[-0.02em] text-foreground">
+              Perfume decants, presented with a <span className="italic">quieter</span> kind of luxury.
+            </h1>
+            <p className="max-w-md text-xs leading-relaxed text-muted font-sans">
+              Browse our curated catalog of authentic fragrances. Order preset vial sizes or specify a custom millilitre amount priced directly from the full bottle. We verify every request by phone or WhatsApp before dispatching.
+            </p>
+          </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 border border-border bg-background">
+          <div className="p-4 text-left border-border border-b border-r">
+            <p className="label-caps text-[9px] text-muted">Active catalog</p>
+            <p className="mt-1 text-sm font-medium font-display text-foreground">
+              <Suspense fallback={<span className="inline-block h-4 w-12 bg-border/60 animate-pulse" />}>
+                <ActiveCatalogCount />
+              </Suspense>
+            </p>
+          </div>
+          <div className="p-4 text-left border-border border-b">
+            <p className="label-caps text-[9px] text-muted">Preset sizes</p>
+            <p className="mt-1 text-sm font-medium font-display text-foreground">5 / 10 / 15ml</p>
+          </div>
+          <div className="p-4 text-left border-border border-r">
+            <p className="label-caps text-[9px] text-muted">Custom milliletre</p>
+            <p className="mt-1 text-sm font-medium font-display text-foreground">Available</p>
+          </div>
+          <div className="p-4 text-left border-border">
+            <p className="label-caps text-[9px] text-muted">Fulfillment</p>
+            <p className="mt-1 text-sm font-medium font-display text-foreground">Manual COD</p>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <ShopAllLink />
+          <Link
+            href="/about"
+            className={buttonVariants({ variant: "outline" })}
+          >
+            Shipping & Authenticity
+          </Link>
+        </div>
+      </div>
+
+    </section>
+  );
+}
+
 async function FeaturedGrid() {
   const featured = await getFeaturedProducts(4);
   return (
@@ -124,71 +240,10 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(graphSchema) }}
       />
 
-      {/* Editorial Hero: Split-Screen Layout */}
-      <section className="grid overflow-hidden border border-border lg:grid-cols-2 min-h-125">
-
-        {/* Left Side: Photographic or Design Visual */}
-        <div className="relative aspect-square lg:aspect-auto bg-surface-paper border-b border-border lg:border-b-0 lg:border-r">
-          <Suspense fallback={<HeroVisualSkeleton />}>
-            <HeroVisual />
-          </Suspense>
-        </div>
-
-        {/* Right Side: Editorial Information — static, paints first */}
-        <div className="flex flex-col justify-between bg-background-warm p-6 sm:p-10 lg:p-14 gap-8">
-          <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 border border-border px-3 py-1 text-[10px] label-caps text-muted bg-background">
-              <span className="h-1.5 w-1.5 rounded-full bg-foreground/60" />
-              Bangladesh · COD · verified
-            </div>
-
-            <div className="space-y-4">
-              <h1 className="font-display text-[clamp(2.25rem,5vw,3.5rem)] font-light leading-[1.08] tracking-[-0.02em] text-foreground">
-                Perfume decants, presented with a <span className="italic">quieter</span> kind of luxury.
-              </h1>
-              <p className="max-w-md text-xs leading-relaxed text-muted font-sans">
-                Browse our curated catalog of authentic fragrances. Order preset vial sizes or specify a custom millilitre amount priced directly from the full bottle. We verify every request by phone or WhatsApp before dispatching.
-              </p>
-            </div>
-          </div>
-
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 border border-border bg-background">
-            <div className="p-4 text-left border-border border-b border-r">
-              <p className="label-caps text-[9px] text-muted">Active catalog</p>
-              <p className="mt-1 text-sm font-medium font-display text-foreground">
-                <Suspense fallback={<span className="inline-block h-4 w-12 bg-border/60 animate-pulse" />}>
-                  <ActiveCatalogCount />
-                </Suspense>
-              </p>
-            </div>
-            <div className="p-4 text-left border-border border-b">
-              <p className="label-caps text-[9px] text-muted">Preset sizes</p>
-              <p className="mt-1 text-sm font-medium font-display text-foreground">5 / 10 / 15ml</p>
-            </div>
-            <div className="p-4 text-left border-border border-r">
-              <p className="label-caps text-[9px] text-muted">Custom milliletre</p>
-              <p className="mt-1 text-sm font-medium font-display text-foreground">Available</p>
-            </div>
-            <div className="p-4 text-left border-border">
-              <p className="label-caps text-[9px] text-muted">Fulfillment</p>
-              <p className="mt-1 text-sm font-medium font-display text-foreground">Manual COD</p>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <ShopAllLink />
-            <Link
-              href="/about"
-              className={buttonVariants({ variant: "outline" })}
-            >
-              Shipping & Authenticity
-            </Link>
-          </div>
-        </div>
-
-      </section>
+      {/* Editorial Hero: offer carousel when an offer is active, otherwise default */}
+      <Suspense fallback={<HeroSkeleton />}>
+        <HomeHero />
+      </Suspense>
 
       {/* Featured Grid Section */}
       <section className="space-y-6 pt-4">

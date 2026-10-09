@@ -10,6 +10,7 @@ import type { Metadata } from "next";
 import { getCollectionStats, getFeaturedProducts, getHeroProduct } from "@/lib/products";
 import { getActiveOffers } from "@/lib/offers";
 import { OfferHeroCarousel } from "@/components/offer-hero-carousel";
+import { cn } from "@/lib/utils";
 import { faqPreview } from "@/lib/faq";
 import { FAQPreview } from "@/components/faq-preview";
 
@@ -115,25 +116,31 @@ function HeroSkeleton() {
       aria-hidden="true"
       className="grid overflow-hidden border border-border lg:grid-cols-2 min-h-125"
     >
-      <div className="aspect-square lg:aspect-auto bg-surface-paper border-b border-border lg:border-b-0 lg:border-r">
-        <HeroVisualSkeleton />
+      <div className="aspect-square lg:aspect-auto bg-surface-paper border-b border-border lg:border-b-0 lg:border-r overflow-hidden">
+        <div className="flex h-full items-center justify-center p-8">
+          <div className="flex items-center">
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className={cn(
+                  "h-44 w-32 sm:h-56 sm:w-40 lg:h-64 lg:w-48 bg-background border border-border p-2",
+                  i > 0 && "-ml-8 sm:-ml-10",
+                )}
+              >
+                <div className="aspect-square bg-border/60" />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
-      <div className="flex flex-col gap-8 bg-background-warm p-6 sm:p-10 lg:p-14">
-        <div className="space-y-4">
-          <div className="h-6 w-48 bg-border/60" />
+      <div className="relative flex flex-col justify-between gap-8 bg-background-warm p-6 sm:p-10 lg:p-14">
+        <div className="space-y-5">
+          <div className="h-6 w-40 bg-border/60" />
           <div className="h-10 w-3/4 bg-border/60" />
           <div className="h-3 w-full max-w-md bg-border/60" />
           <div className="h-3 w-2/3 max-w-sm bg-border/60" />
         </div>
-        <div className="grid grid-cols-2 gap-px bg-border">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-background p-4">
-              <div className="h-2 w-16 bg-border/60" />
-              <div className="h-4 w-20 bg-border/60 mt-2" />
-            </div>
-          ))}
-        </div>
-        <div className="h-10 w-full bg-border/60" />
+        <div className="h-11 w-full max-w-48 bg-border/60" />
       </div>
     </div>
   );

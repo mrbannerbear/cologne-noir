@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 
 type OfferOrderProps = {
   offer: OfferView;
+  showPriceLine?: boolean;
 };
 
 const SIZE_OPTIONS: Array<{ value: BundleSize; label: string }> = [
@@ -19,7 +20,7 @@ const SIZE_OPTIONS: Array<{ value: BundleSize; label: string }> = [
   { value: "DECANT_10ML", label: "10ml" },
 ];
 
-export function OfferOrder({ offer }: OfferOrderProps) {
+export function OfferOrder({ offer, showPriceLine = true }: OfferOrderProps) {
   const router = useRouter();
   const [size, setSize] = useState<BundleSize>("DECANT_5ML");
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -85,19 +86,29 @@ export function OfferOrder({ offer }: OfferOrderProps) {
   return (
     <>
       <div className="space-y-4 pt-2">
-        <div className="flex flex-wrap items-end gap-4 justify-between border-t border-border pt-6">
-          <div>
-            <p className="label-caps text-[10px] text-muted">Bundle Price</p>
-            <p className="mt-1 font-display text-2xl font-light text-foreground">{formatBdt(total)}</p>
+        {showPriceLine ? (
+          <div className="flex flex-wrap items-end gap-4 justify-between border-t border-border pt-6">
+            <div>
+              <p className="label-caps text-[10px] text-muted">Bundle Price</p>
+              <p className="mt-1 font-display text-2xl font-light text-foreground">{formatBdt(total)}</p>
+            </div>
+            <Button
+              type="button"
+              onClick={() => setSheetOpen(true)}
+              className="min-w-40 h-10"
+            >
+              Order This Bundle
+            </Button>
           </div>
+        ) : (
           <Button
             type="button"
             onClick={() => setSheetOpen(true)}
-            className="min-w-40 h-10"
+            className="w-full min-w-44 h-11 sm:w-auto"
           >
             Order This Bundle
           </Button>
-        </div>
+        )}
       </div>
 
       <Sheet open={sheetOpen} onClose={closeSheet} title={offer.name}>

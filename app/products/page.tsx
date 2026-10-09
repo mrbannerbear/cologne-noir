@@ -87,10 +87,10 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             </h2>
           </div>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-            <Suspense fallback={<div className="h-10 w-64 bg-muted/10 rounded-[2px]" />}>
+            <Suspense fallback={<div className="h-10 w-64 bg-muted/10 rounded-xs" />}>
               <SearchBar />
             </Suspense>
-            <Suspense fallback={<div className="h-10 w-16 bg-muted/10 rounded-[2px]" />}>
+            <Suspense fallback={<div className="h-10 w-16 bg-muted/10 rounded-xs" />}>
               <GenderFilterBar />
             </Suspense>
           </div>

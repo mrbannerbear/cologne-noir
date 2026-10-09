@@ -4,7 +4,7 @@ Catalog and order-intake site for **Cologne Noir** — an authentic fragrance de
 business shipping across Bangladesh. Built to replace "DM to order" with a real product catalog,
 while keeping fulfillment personal: every order is confirmed by hand before it ships.
 
-**Live site:** _add URL once deployed_
+**Live site:** [Cologne Noir](https://colognenoir.com)
 **Instagram:** [@cologne.noir](https://instagram.com/cologne.noir)
 
 ---

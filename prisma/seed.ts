@@ -31,8 +31,8 @@ const OFFERS: OfferSeed[] = [
       "marwa-edp",
       "rayhaan-azul-edp",
     ],
-    price5mlBdt: 855,
-    price10mlBdt: 1510,
+    price5mlBdt: 810,
+    price10mlBdt: 1435,
     sortOrder: 1,
   },
   {
@@ -45,8 +45,8 @@ const OFFERS: OfferSeed[] = [
       "rayhaan-aquatica-edp",
       "rasasi-daarej-sport-edp",
     ],
-    price5mlBdt: 750,
-    price10mlBdt: 1345,
+    price5mlBdt: 710,
+    price10mlBdt: 1280,
     sortOrder: 2,
   },
 ];

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import type { ChangeEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Gender } from "@prisma/client";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -18,24 +18,36 @@ const filters: Array<{ value: "ALL" | Gender; label: string }> = [
 export function SearchBar() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const query = searchParams.get("q") || "";
+  const [value, setValue] = useState(() => searchParams.get("q") || "");
+  const hasMounted = useRef(false);
 
-  function handleSearch(value: string) {
-    const params = new URLSearchParams(searchParams.toString());
-    if (value) {
-      params.set("q", value);
-    } else {
-      params.delete("q");
+  useEffect(() => {
+    if (!hasMounted.current) {
+      hasMounted.current = true;
+      return;
     }
-    router.push(`/products?${params.toString()}`);
-  }
+
+    if (value === (searchParams.get("q") || "")) return;
+
+    const id = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (value) {
+        params.set("q", value);
+      } else {
+        params.delete("q");
+      }
+      router.push(`/products?${params.toString()}`, { scroll: false });
+    }, 500);
+
+    return () => clearTimeout(id);
+  }, [value, searchParams, router]);
 
   return (
     <div className="relative w-full max-w-xs">
       <input
         type="text"
-        value={query}
-        onChange={(e: ChangeEvent<HTMLInputElement>) => handleSearch(e.target.value)}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
         placeholder="Search brand or perfume..."
         className="w-full bg-transparent border border-border rounded-[2px] px-4 py-2 text-sm text-foreground outline-none focus:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground transition-colors duration-300 placeholder:text-muted/50"
       />
@@ -59,7 +71,7 @@ export function GenderFilterBar() {
       params.set("gender", value);
     }
     const query = params.toString();
-    router.push(query ? `/products?${query}` : "/products");
+    router.push(query ? `/products?${query}` : "/products", { scroll: false });
   }
 
   return (

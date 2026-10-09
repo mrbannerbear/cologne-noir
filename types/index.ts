@@ -62,3 +62,38 @@ export type CollectionStats = {
   priceFloor: number;
   priceCeiling: number;
 };
+
+// ── Offer domain ─────────────────────────────────────────
+
+export type BundleSize = "DECANT_5ML" | "DECANT_10ML";
+
+export type OfferItemView = {
+  slug: string;
+  brand: string;
+  name: string;
+  images: string[];
+};
+
+export type OfferView = {
+  id: string;
+  slug: string;
+  name: string;
+  tagline: string;
+  occasion: string | null;
+  description: string | null;
+  price5mlBdt: number;
+  price10mlBdt: number;
+  eventSlug: string;
+  eventName: string;
+  items: OfferItemView[];
+};
+
+export type OfferOrderFormData = {
+  offerId: string;
+  size: BundleSize;
+  customerName: string;
+  phone: string;
+  address: string;
+  city: string;
+  notes?: string | null;
+};

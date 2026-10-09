@@ -10,3 +10,13 @@ export const orderSchema = z.object({
   city: z.string().trim().min(2).max(80),
   notes: z.string().trim().max(500).nullable().optional(),
 });
+
+export const offerOrderSchema = z.object({
+  offerId: z.string().min(1),
+  size: z.enum(["DECANT_5ML", "DECANT_10ML"]),
+  customerName: z.string().trim().min(2).max(120),
+  phone: z.string().trim().min(6).max(32),
+  address: z.string().trim().min(10).max(500),
+  city: z.string().trim().min(2).max(80),
+  notes: z.string().trim().max(500).nullable().optional(),
+});
